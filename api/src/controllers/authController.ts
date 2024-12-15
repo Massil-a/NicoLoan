@@ -5,11 +5,6 @@ import * as jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../secrets';
 import { HttpException, statusCodes, ErrCodes } from '../utils/exceptions';
 
-export const test_routes = async (req: Request, res: Response) => {
-  console.log("controller \"auth.ts\" reached.")
-  res.json('Success')
-}
-
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { firstName, lastName, email, password } = req.body;

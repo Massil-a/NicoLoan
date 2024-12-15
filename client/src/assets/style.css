@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+
+:root {
+  --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --primary-color: #fdae54;
+  --primary-color-dark: rgb(209, 101, 1);
+  --whiteDarkable: rgb(255, 255, 255);
+  --blackText: rgb(51, 51, 51);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--whiteDarkable);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Lato', sans-serif;
+  font-size: 18px;
+}
+
+/* #region StyleAuth */
+.auth-form-container {
+  background-color: var(--whiteDarkable);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.auth-form-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 28px;
+  color: var(--blackText);
+}
+
+.auth-form-group {
+  margin-bottom: 15px;
+}
+
+.auth-form-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--blackText);
+}
+
+.auth-form-input,
+.auth-form-checkbox {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.auth-form-checkbox {
+  width: auto;
+  margin-right: 10px;
+}
+
+.terms{
+  display: flex;
+}
+
+.auth-form-button {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--primary-color);
+  color: var(--whiteDarkable);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.auth-form-button:hover {
+  background-color: var(--primary-color-dark);
+}
+
+.auth-form-switch {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.auth-form-switch a {
+  color: var(--primary-color);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.auth-form-switch a:hover {
+  text-decoration: underline;
+}
+
+.password-container {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-password {
+  margin-left: -30px;
+  cursor: pointer;
+}
+/* #endregion StyleAuth*/
