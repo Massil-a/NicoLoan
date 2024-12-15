@@ -2,7 +2,7 @@
   <Loader/>
   <Header/>
   <div class="index">
-    <h1>Bienvenue sur votre tableau de bord !</h1>
+    <h1>Bienvenue sur votre tableau de bord, {{ firstName }} {{ lastName}} !</h1>
     <p>Vous êtes connecté.</p>
   </div>
 </template>
@@ -15,6 +15,19 @@ export default {
   components: {
     Loader,
     Header,
+  },
+  data(){
+    return {
+      firstName : '',
+      lastName: '',
+    }
+  },
+  created(){
+    const user = JSON.parse(localStorage.getItem('nl_user'));
+    if(user){
+      this.firstName = user.firstName;
+      this.lastName = user.lastName;
+    }
   }
 }
 </script>

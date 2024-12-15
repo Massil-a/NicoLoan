@@ -68,7 +68,7 @@ export default {
 
         const data = await response.json();
 
-        localStorage.setItem('nl_user', data.user);
+        localStorage.setItem('nl_user', JSON.stringify(data.user).toString());
         VueCookies.set('nl_auth_token', data.token, '2h');
 
         this.$router.push({ name: 'Index' });
