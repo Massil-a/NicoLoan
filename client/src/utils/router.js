@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Index from '@/views/Index.vue';
 import Auth from '@/views/Auth.vue';
 import NotFoundPage from '@/views/NotFoundPage.vue';
+import Loans from '@/views/Loans.vue';
 
 import VueCookies from 'vue-cookies'
 
@@ -15,6 +16,11 @@ const routes = [
     path: '/index',
     name: 'Index',
     component: Index,
+  },
+  {
+    path: '/prets',
+    name: 'Loans',
+    component: Loans,
   },
   {
     path: '/:pathMatch(.*)*', // c'est un catch-all route, pour toutes les routes non définies
