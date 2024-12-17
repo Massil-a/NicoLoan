@@ -1,13 +1,17 @@
 <template>
   <Loader />
   <ErrorAlert/>
-  <div class="appname">
-    {{ APP_NAME }}
-  </div>
-  <br><br><br>
   <div class="container">
-    <Connexion v-if="isLogin" @switchForm="toggleForm" />
-    <Inscription v-else @switchForm="toggleForm" />
+    <div class="info">
+      <div class="appname">
+        {{ APP_NAME }}
+      </div>
+    </div>
+
+    <div class="form">
+      <Connexion v-if="isLogin" @switchForm="toggleForm" />
+      <Inscription v-else @switchForm="toggleForm" />
+    </div>
   </div>
 </template>
 
@@ -42,15 +46,28 @@ export default {
 <style scoped>
 .container {
   display: flex;
+  height: 100vh; /* Pour occuper toute la hauteur de la fenêtre */
+}
+
+.info {
+  flex: 0 0 40%; /* 40% de la largeur pour le texte */
+  background-color: var(--primary-color);
+  display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+}
+
+.form {
+  flex: 1; /* Prend le reste de l'espace disponible */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: var(--whiteDarkable);
 }
 
 .appname {
-  display: flex;
-  justify-content: center;
   font-size: 88px;
+  color: #fff; /* Assurez-vous que le texte soit visible avec un fond sombre */
 }
 </style>
+
