@@ -3,6 +3,7 @@ import Index from '@/views/Index.vue';
 import Auth from '@/views/Auth.vue';
 import NotFoundPage from '@/views/NotFoundPage.vue';
 import Loans from '@/views/Loans.vue';
+import Clients from '@/views/Clients.vue';
 
 import VueCookies from 'vue-cookies'
 
@@ -21,6 +22,11 @@ const routes = [
     path: '/prets',
     name: 'Loans',
     component: Loans,
+  },
+  {
+    path: '/clients',
+    name: 'Clients',
+    component: Clients,
   },
   {
     path: '/:pathMatch(.*)*', // c'est un catch-all route, pour toutes les routes non définies

@@ -7,13 +7,13 @@
         iconPath="current-loan.svg" 
         title="Prêts en cours" 
         subtitle="Consultez les prêts actuellement actifs" 
-        :redirectPath="'CurrentLoans'" 
+        redirectPath="CurrentLoans" 
       />
       <Card 
         iconPath="completed-loan.svg" 
         title="Prêts terminés" 
         subtitle="Consultez les prêts qui sont terminés" 
-        :redirectPath="'CompletedLoans'" 
+        redirectPath="CompletedLoans"
       />
     </div>
   </div>
