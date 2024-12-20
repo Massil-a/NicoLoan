@@ -39,7 +39,7 @@ export default {
                 this.loading = true;
                 this.$store.dispatch('setLoading', true);
 
-                const response = await fetch(`${API_URL}/clients/login`, {
+                const response = await fetch(`${API_URL}/clients`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
