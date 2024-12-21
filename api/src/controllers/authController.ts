@@ -22,7 +22,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
         password: hashSync(password, 10),
       }
     })
-    res.json({ user : {
+    res.status(200).json({ user : {
       id : user.id,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -50,7 +50,8 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       return next(new HttpException("Mot de passe incorrect!", ErrCodes.INCORRECT_PASSWORD, statusCodes.BAD_REQUEST, null));
     }
     const token = jwt.sign({
-      userId : user.id
+      userId : user.id,
+      role: user.idRole
     },JWT_SECRET)
     res.json({  user : {
         id : user.id,

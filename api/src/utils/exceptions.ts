@@ -14,16 +14,18 @@ export class HttpException extends Error {
 }
 
 export enum ErrCodes {
-    USER_NOT_FOUND = 1002,         // Utilisateur introuvable
+    USER_NOT_FOUND = 1001,         // Utilisateur introuvable
     USER_ALREADY_EXISTS = 1002,    // Utilisateur déjà existant
     INCORRECT_PASSWORD = 1003,     // Mot de passe incorrect
     INVALID_EMAIL = 1004,          // Email malformé ou invalide
     UNAUTHORIZED_ACCESS = 1005,    // Accès non autorisé
     ACCOUNT_LOCKED = 1006,         // Compte verrouillé
     SESSION_EXPIRED = 1007,        // Session expirée
-    INVALID_TOKEN = 1008,          // Jeton d'authentification invalide
+    TOKEN_INVALID = 1008,          // Jeton d'authentification invalide
     DATABASE_ERROR = 1009,         // Erreur générale de base de données
-    INTERNAL_SERVER_ERROR = 1010   // Erreur interne du serveur
+    INTERNAL_SERVER_ERROR = 1010,  // Erreur interne du serveur
+
+    CLIENT_ALREADY_EXISTS = 2002   // Client déjà existant
 }
 
 
