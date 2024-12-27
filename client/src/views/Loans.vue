@@ -1,18 +1,23 @@
 <template>
   <div>
-    <Loader />
     <Header />
     <div class="dashboard">
       <Card 
+        iconPath="plus-circle.svg" 
+        title="Nouveau prêt" 
+        subtitle="Ajoutez un prêt à la liste" 
+        redirectPath="NewLoan" 
+      />
+      <Card 
         iconPath="current-loan.svg" 
         title="Prêts en cours" 
-        subtitle="Consultez les prêts actuellement actifs" 
+        subtitle="Consultez les prêts actifs" 
         redirectPath="CurrentLoans" 
       />
       <Card 
         iconPath="completed-loan.svg" 
         title="Prêts terminés" 
-        subtitle="Consultez les prêts qui sont terminés" 
+        subtitle="Consultez les prêts terminés" 
         redirectPath="CompletedLoans"
       />
     </div>
@@ -20,14 +25,12 @@
 </template>
 
 <script>
-import Loader from '@/components/utils/Loader.vue';
 import Header from '@/components/main/Header.vue';
 import Card from '@/components/main/Card.vue';
 
 export default {
   components: {
     Header,
-    Loader,
     Card,
   },
 };

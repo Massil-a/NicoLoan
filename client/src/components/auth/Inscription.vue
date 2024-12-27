@@ -1,5 +1,4 @@
 <template>
-  <ErrorAlert/>
   <div class="auth-form-container">
     <form @submit.prevent="Inscription">
       <h2 class="auth-form-title">Inscription</h2>
@@ -59,12 +58,8 @@
 
 <script>
 import { API_URL } from '@/config';
-import ErrorAlert from '@/components/utils/ErrorAlert.vue';
 
 export default {
-  components : {
-    ErrorAlert,
-  },
   data() {
     return {
       firstName: '',

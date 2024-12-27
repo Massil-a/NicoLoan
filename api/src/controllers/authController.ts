@@ -8,7 +8,6 @@ import { HttpException, statusCodes, ErrCodes } from '../utils/exceptions';
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { firstName, lastName, email, password } = req.body;
-    await prisma_client.$connect();
     let user = await prisma_client.users.findFirst({ where: { email } });
     if (user) {
       return next(new HttpException("Utilisateur déjà existant!", ErrCodes.USER_ALREADY_EXISTS, statusCodes.UNAUTHORIZED, null))
@@ -31,18 +30,14 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
       updatedAt : user.updatedAt
     }})
   } catch (e:any) {
-    // console.error(e + '\n_______________________________________________________________________________________________________');
-    next(e)
-  } finally {
-    await prisma_client.$disconnect();
+    return next(new HttpException("Erreur durant l'inscription", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null))
   }
 }
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
-    await prisma_client.$connect();
-    let user = (await prisma_client.users.findFirst({ where: { email } }))!;
+    let user = await prisma_client.users.findFirst({ where: { email } });
     if (!user) {
       return next(new HttpException("Utilisateur introuvable!", ErrCodes.USER_NOT_FOUND, statusCodes.NOT_FOUND, null));
     }
@@ -64,9 +59,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       token
     })
   } catch (e:any) {
-    // console.error(e + '\n_______________________________________________________________________________________________________');
-    next(e)
-  } finally {
-    await prisma_client.$disconnect();
+    console.log(e)
+    return next(new HttpException("Erreur durant la connexion.", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null))
   }
 }

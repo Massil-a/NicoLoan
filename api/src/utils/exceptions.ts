@@ -14,6 +14,7 @@ export class HttpException extends Error {
 }
 
 export enum ErrCodes {
+    BAD_REQUEST = 1000,            // Mauvaise requête provient du client
     USER_NOT_FOUND = 1001,         // Utilisateur introuvable
     USER_ALREADY_EXISTS = 1002,    // Utilisateur déjà existant
     INCORRECT_PASSWORD = 1003,     // Mot de passe incorrect

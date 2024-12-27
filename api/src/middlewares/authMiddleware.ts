@@ -18,21 +18,18 @@ const authMiddleware = (role?: string) => {
 
         try {
             const payload = jwt.verify(token, JWT_SECRET) as any;
-            await prisma_client.$connect()
             const user = await prisma_client.users.findFirst({ where: { id: payload.userId } })
             if (!user) {
                 return next(new HttpException("Non autorisé!", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.BAD_REQUEST, null))
             }
 
-            console.log("role : ", payload.role)
-            if (role && payload.role != role) return next(new HttpException("Non autorisé!", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.UNAUTHORIZED, null))
+            if (payload.role != role) return next(new HttpException("Droit requis!", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.UNAUTHORIZED, null))
 
+            req.user = user
             return next()
-        } catch (e) {
-            console.log(e)
-            return next(new HttpException("Erreur dans la vérification d'authentification.", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, null))
-        } finally {
-            await prisma_client.$disconnect()
+        } catch (e:any) {
+            console.log(e.message)
+            return next(new HttpException("Erreur dans la vérification d'authentification.", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null))
         }
     }
 }

@@ -1,6 +1,6 @@
 <template>
   <a class="client-card" @click="handleClick(page)">
-    <h3>{{ number }}</h3>
+    <h3>{{ clientTag }}</h3>
     <h4>{{ title }}</h4>
     <p>{{ description }}</p>
     <span class="link-text">
@@ -16,7 +16,7 @@
 export default {
   name: 'ClientCard',
   props: {
-    number: {
+    clientTag: {
       type: String,
       required: true,
       validator(value) {
@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     handleClick(page) {
-      // Fonction à remplir plus tard
+      // TODO Fonction à remplir plus tard
       console.log('Page:', page);
     }
   }

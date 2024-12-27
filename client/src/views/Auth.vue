@@ -1,6 +1,4 @@
 <template>
-  <Loader />
-  <ErrorAlert/>
   <div class="container">
     <div class="info">
       <div class="appname">
@@ -18,14 +16,10 @@
 <script>
 import { APP_NAME } from '@/config';
 import Connexion from '@/components/auth/Connexion.vue';
-import Loader from '@/components/utils/Loader.vue';
 import Inscription from '@/components/auth/Inscription.vue';
-import ErrorAlert from '@/components/utils/ErrorAlert.vue';
 
 export default {
   components: {
-    Loader,
-    ErrorAlert,
     Connexion,
     Inscription,
   },

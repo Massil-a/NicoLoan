@@ -1,5 +1,4 @@
 <template>
-  <Loader/>
   <Header/>
   <div class="index">
     <h1>Bienvenue sur votre tableau de bord, {{ firstName }} {{ lastName}} !</h1>
@@ -8,12 +7,10 @@
 </template>
 
 <script>
-import Loader from '@/components/utils/Loader.vue';
 import Header from '@/components/main/Header.vue';
 
 export default {
   components: {
-    Loader,
     Header,
   },
   data(){

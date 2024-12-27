@@ -14,7 +14,8 @@ app.use(express.json())
 app.use('/api', rootRouter);
 
 export const prisma_client = new PrismaClient({
-  log:['query']
+  log:['query', 'error', 'info', 'warn'],
+  errorFormat: 'pretty',
 })
 
 app.use(errorMiddleware)

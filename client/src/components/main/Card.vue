@@ -30,14 +30,13 @@ export default {
     },
     data() {
         return {
-            imageUrl: icons[`/src/assets/icons/${this.iconPath}`]?.default || ''
+            imageUrl: icons[`/src/assets/icons/${this.iconPath}`]?.default || 'https://www.svgrepo.com/svg/209459/error'
         }
     },
     methods: {
         redirect() {
-            alert(document.getElementsByClassName("card-icon")[0].src + ' alors que image url : ' + this.imageUrl)
             if (this.redirectPath) {
-                //   this.$router.push(this.redirectPath);
+                this.$router.push(this.redirectPath);
             }
         }
     }

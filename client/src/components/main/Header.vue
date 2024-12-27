@@ -6,12 +6,12 @@
     </div>
     <nav class="nav-links">
       <ul>
-        <li><a href="/" class="nav-link">Accueil</a></li>
-        <li><a href="/clients" class="nav-link">Clients</a></li>
-        <li><a href="/prets" class="nav-link">Prêts</a></li>
-        <li><a href="/remboursements" class="nav-link">Remboursements</a></li>
-        <li><a href="/contact" class="nav-link">Contact</a></li>
-        <li><a href="/parametres" class="nav-link">Paramètres</a></li>
+        <li><a href="/" class="nav-link" id="accueil">Accueil</a></li>
+        <li><a href="/Clients" class="nav-link" id="clients">Clients</a></li>
+        <li><a href="/Loans" class="nav-link" id="loans">Prêts</a></li>
+        <li><a href="/Repayments" class="nav-link" id="repayments">Remboursements</a></li>
+        <li><a href="/Contact" class="nav-link" id="contact">Contact</a></li>
+        <li><a href="/Settings" class="nav-link" id="settings">Paramètres</a></li>
         <li @click="signOut"><a class="nav-link">
           <svg
             xmlns="http://www.w3.org/2000/svg"

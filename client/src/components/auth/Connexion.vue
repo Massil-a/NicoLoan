@@ -26,19 +26,14 @@
         Pas encore de compte ? <a @click="switchToSignup">S'inscrire</a>
       </p>
     </form>
-    <ErrorAlert />
   </div>
 </template>
 
 <script>
 import { API_URL } from '@/config';
-import ErrorAlert from '@/components/utils/ErrorAlert.vue';
 import VueCookies from 'vue-cookies';
 
 export default {
-  components: {
-    ErrorAlert,
-  },
   data() {
     return {
       email: '',
