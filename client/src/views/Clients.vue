@@ -1,21 +1,23 @@
 <template>
-    <Header />
-    <div class="containerNewButton-Mid">
-        <Card 
-            iconPath="plus-circle.svg" 
-            title="Nouveau client" 
-            subtitle="Enregistrez un nouveau client" 
-            redirectPath="NewClient" 
-        />
-    </div>
-    <div class="clients-container">
-        <div v-for="client in clients" :key="client.id">
-            <ClientCard 
-                :clientTag="client.clientTag" 
-                :title="`${client.firstName} ${client.lastName}`" 
-                :description="`${client.email}\n${client.phone}`"
-                :page="`/client/${client.clientTag}`"
+    <div class="main-container">
+        <Header />
+        <div class="button-container" :class="clients.length ? 'bottom-left' : 'center-middle'">
+            <Card 
+                iconPath="plus-circle.svg" 
+                title="Nouveau client" 
+                subtitle="Enregistrez un nouveau client" 
+                redirectPath="NewClient" 
             />
+        </div>
+        <div class="clients-container">
+            <div v-for="client in clients" :key="client.id">
+                <ClientCard 
+                    :clientTag="client.clientTag" 
+                    :title="`${client.firstName} ${client.lastName}`" 
+                    :description="`${client.email}\n${client.phone}`"
+                    :page="client.clientTag"
+                />
+            </div>
         </div>
     </div>
 </template>
@@ -80,30 +82,27 @@ export default {
 </script>
 
 <style>
-.containerNewButton-BotLeft {
-    position: fixed;
-    bottom: 0;
-    left: 8.5%;
-    transform: translateX(-50%);
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    z-index: 1000;
-    width: auto;
-    max-width: 100%;
+.main-container {
+    position: relative;
+    height: 100vh;
+    overflow: hidden; /* Évite les barres de défilement globales */
 }
 
-.containerNewButton-Mid {
-    position: fixed;
+.button-container {
+    position: absolute;
+    z-index: 1000;
+}
+
+.bottom-left {
+    bottom: 10px;
+    left: 3.5%;
+    transform: translateX(-10%);
+}
+
+.center-middle {
     bottom: 40%;
     left: 50%;
     transform: translateX(-50%);
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    z-index: 1000;
-    width: auto;
-    max-width: 100%;
 }
 
 .clients-container {
@@ -113,6 +112,8 @@ export default {
     gap: 20px; /* Espacement entre les cartes */
     padding: 20px;
     margin-top: 100px; /* Ajoute de l'espace sous le header */
+    height: calc(100vh - 130px); /* Hauteur disponible après le header et le bouton */
+    overflow-y: auto; /* Permet le défilement vertical si nécessaire */
 }
 
 .client-card {

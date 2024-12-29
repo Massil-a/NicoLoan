@@ -1,15 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import VueCookies from 'vue-cookies'
 
-import Index from '@/views/Index.vue';
 import Auth from '@/views/Auth.vue';
+import Index from '@/views/Index.vue';
 import NotFoundPage from '@/views/NotFoundPage.vue';
+
 import Loans from '@/views/Loans.vue';
-import CompletedLoans from '@/views/Loans/CompletedLoans.vue';
-import CurrentLoans from '@/views/Loans/CurrentLoans.vue';
 import NewLoan from '@/views/Loans/NewLoan.vue';
-import NewClient from '@/views/Clients/NewClient.vue'
+import CurrentLoans from '@/views/Loans/CurrentLoans.vue';
+import CompletedLoans from '@/views/Loans/CompletedLoans.vue';
+
 import Clients from '@/views/Clients.vue';
+import NewClient from '@/views/Clients/NewClient.vue'
+import ClientInformation from '@/views/Clients/ClientInformation.vue';
 
 
 const routes = [
@@ -52,6 +55,12 @@ const routes = [
     path: '/NewClient',
     name: 'NewClient',
     component: NewClient,
+  },
+  {
+    path: '/ClientInformation/:page',
+    name: 'ClientInformation',
+    component: ClientInformation,
+    props: true
   },
   {
     path: '/:pathMatch(.*)*', // c'est un catch-all route, pour toutes les routes non définies

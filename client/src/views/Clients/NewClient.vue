@@ -1,30 +1,35 @@
 <template>
   <Header />
-  <div class="card">
-    <form @submit.prevent="submitForm" autocomplete="off">
-      <div class="form-group">
-        <label for="firstName">Prénom:</label>
-        <input type="text" id="firstName" v-model="client.firstName" autocomplete="new-first-name" maxlength="30" required />
-      </div>
-      <div class="form-group">
-        <label for="lastName">Nom:</label>
-        <input type="text" id="lastName" v-model="client.lastName" autocomplete="new-last-name" maxlength="30" required />
-      </div>
-      <div class="form-group">
-        <label for="clientTag">Tag Client:</label>
-        <input type="text" id="clientTag" v-model="client.clientTag" autocomplete="new-client-tag" maxlength="7" required />
-      </div>
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" v-model="client.email" autocomplete="new-email" maxlength="150" required />
-      </div>
-      <div class="form-group">
-        <label for="phone">Téléphone:</label>
-        <input type="tel" id="phone" v-model="client.phone" autocomplete="new-phone" maxlength="20" required />
-      </div>
-      <button type="button" @click="goToClients()">Annuler</button>
-      <button type="submit">Enregistrer</button>
-    </form>
+  <div class="contenu-container">
+    <div class="card">
+      <form @submit.prevent="submitForm" autocomplete="off">
+        <div class="form-group">
+          <label for="firstName">Prénom:</label>
+          <input type="text" id="firstName" v-model="client.firstName" autocomplete="new-first-name" maxlength="30"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="lastName">Nom:</label>
+          <input type="text" id="lastName" v-model="client.lastName" autocomplete="new-last-name" maxlength="30"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="clientTag">Tag Client:</label>
+          <input type="text" id="clientTag" v-model="client.clientTag" autocomplete="new-client-tag" maxlength="7"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" v-model="client.email" autocomplete="new-email" maxlength="150" required />
+        </div>
+        <div class="form-group">
+          <label for="phone">Téléphone:</label>
+          <input type="tel" id="phone" v-model="client.phone" autocomplete="new-phone" maxlength="20" required />
+        </div>
+        <button type="button" @click="goToClients()">Annuler</button>
+        <button type="submit">Enregistrer</button>
+      </form>
+    </div>
   </div>
 
   <Notification v-if="notificationMessage" :message="notificationMessage" :color="notificationColor" />
@@ -112,6 +117,11 @@ export default {
   width: 300px;
   text-align: center;
   margin: 0 auto;
+
+  margin-top: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .form-group {

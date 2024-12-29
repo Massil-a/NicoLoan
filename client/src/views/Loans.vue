@@ -37,10 +37,13 @@ export default {
 </script>
 
 <style scoped>
-.dashboard {
+.dashboard {  
   display: flex;
   flex-wrap: wrap;
   gap: 50px;
   padding: 20px;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 </style>

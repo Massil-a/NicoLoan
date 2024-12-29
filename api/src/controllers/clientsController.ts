@@ -43,7 +43,7 @@ export const addClient = async (req: Request, res: Response, next: NextFunction)
   }
 }
 
-export const getClientById = async (req: Request, res: Response, next: NextFunction) => {
+export const getClientsById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const clients = await prisma_client.clients.findMany({ where : { userId: req.user.id }})
     if(!clients) return next(new HttpException("Aucun client trouvé.", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.NOT_FOUND, null))
@@ -52,5 +52,27 @@ export const getClientById = async (req: Request, res: Response, next: NextFunct
   } catch(e:any) {
     console.log(e)
     return next(new HttpException("Erreur dans la récupération des clients.", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null))
+  }
+}
+
+export const getOneClientById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { tagClient } = req.params
+    if(!tagClient) return next(new HttpException("Aucun client fournit.", ErrCodes.BAD_REQUEST, statusCodes.BAD_REQUEST, null))
+    const client = await prisma_client.clients.findMany({ 
+      where : { 
+        AND :
+        [
+          { userId: req.user.id }, 
+          { clientTag: tagClient }
+        ] 
+      }
+    })
+    if(!client) return next(new HttpException("Client introuvable.", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.NOT_FOUND, null))
+
+    res.status(200).json({ msg: "Client bien trouvé.", client })
+  } catch(e:any) {
+    console.log(e)
+    return next(new HttpException("Erreur dans la récupération du client.", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null))
   }
 }

@@ -41,8 +41,7 @@ export default {
   },
   methods: {
     handleClick(page) {
-      // TODO Fonction à remplir plus tard
-      console.log('Page:', page);
+      this.$router.push({ name: 'ClientInformation', params: { page } });
     }
   }
 };
