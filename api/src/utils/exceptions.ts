@@ -26,7 +26,8 @@ export enum ErrCodes {
     DATABASE_ERROR = 1009,         // Erreur générale de base de données
     INTERNAL_SERVER_ERROR = 1010,  // Erreur interne du serveur
 
-    CLIENT_ALREADY_EXISTS = 2002   // Client déjà existant
+    CLIENT_ALREADY_EXISTS = 2002,  // Client déjà existant
+    CLIENT_NOT_FOUND = 2003        // Client introuvable
 }
 
 

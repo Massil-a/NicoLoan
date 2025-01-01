@@ -10,7 +10,7 @@
               <h2>Informations sur le prêt</h2>
               <div class="form-group">
                 <label for="loanName">Nom du Prêt</label>
-                <input type="text" id="loanName" v-model="loan.name" required />
+                <input type="text" id="loanName" v-model="loan.loanName" required />
               </div>
               <div class="form-group">
                 <label for="clientTag">ClientTag</label>
@@ -27,6 +27,10 @@
                 <label for="totalAmount">Montant Total</label>
                 <input type="number" id="totalAmount" v-model="loan.totalAmount" required />
               </div>
+              <div class="form-group">
+                <label for="monthlyPayment">Montant par mois</label>
+                <input type="number" id="monthlyPayment" v-model="loan.monthlyPayment" required />
+              </div>
             </div>
           </div>
 
@@ -35,16 +39,16 @@
             <div class="form-section">
               <h2>Dates</h2>
               <div class="form-group">
-                <label for="startDate">Date de Début</label>
-                <input type="date" id="startDate" v-model="loan.startDate" required />
+                <label for="startedAt">Date de Début</label>
+                <input type="date" id="startedAt" v-model="loan.startedAt" required />
               </div>
               <div class="form-group">
-                <label for="endDate">Date de Fin</label>
-                <input type="date" id="endDate" v-model="loan.endDate" required @change="calculateDuration" />
+                <label for="dueDate">Date de Fin</label>
+                <input type="date" id="dueDate" v-model="loan.dueDate" required @change="calculateDurationMonths" />
               </div>
               <div class="form-group">
-                <label for="duration">Durée (en mois)</label>
-                <input type="text" id="duration" v-model="loan.duration" disabled />
+                <label for="durationMonths">Durée (en mois)</label>
+                <input type="text" id="durationMonths" v-model="loan.durationMonths" disabled />
               </div>
             </div>
           </div>
@@ -68,12 +72,13 @@ export default {
   data() {
     return {
       loan: {
-        name: '',
+        loanName: '',
         clientTag: '',
         totalAmount: 0,
-        startDate: new Date().toISOString().split('T')[0],
-        endDate: '',
-        duration: '',
+        monthlyPayment: 0,
+        startedAt: new Date().toISOString().split('T')[0],
+        dueDate: '',
+        durationMonths: '',
       },
     };
   },
@@ -106,11 +111,11 @@ export default {
     goToLoans() {
       this.$router.push('Loans');
     },
-    calculateDuration() {
-      const start = new Date(this.loan.startDate);
-      const end = new Date(this.loan.endDate);
+    calculateDurationMonths() {
+      const start = new Date(this.loan.startedAt);
+      const end = new Date(this.loan.dueDate);
       const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
-      this.loan.duration = months;
+      this.loan.durationMonths = months;
     },
   },
 };
