@@ -8,7 +8,6 @@ import NotFoundPage from '@/views/NotFoundPage.vue';
 import Loans from '@/views/Loans.vue';
 import NewLoan from '@/views/Loans/NewLoan.vue';
 import CurrentLoans from '@/views/Loans/CurrentLoans.vue';
-import CompletedLoans from '@/views/Loans/CompletedLoans.vue';
 
 import Clients from '@/views/Clients.vue';
 import NewClient from '@/views/Clients/NewClient.vue'
@@ -30,11 +29,6 @@ const routes = [
     path: '/Loans',
     name: 'Loans',
     component: Loans,
-  },
-  {
-    path: '/CompletedLoans',
-    name: 'CompletedLoans',
-    component: CompletedLoans,
   },
   {
     path: '/Clients',

@@ -1,7 +1,7 @@
 <template>
   <Header />
   <div class="contenu-container">
-    <LaonsTable :UserId="UserId" />
+    <LaonsTable :Own="true" />
   </div>
 </template>
 

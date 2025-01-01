@@ -16,8 +16,8 @@
       />
       <Card 
         iconPath="completed-loan.svg" 
-        title="Prêts terminés" 
-        subtitle="Consultez les prêts terminés" 
+        title="Feuille de calcul ou jsp" 
+        subtitle="Y'a trop de chose à revoir avec Nico" 
         redirectPath="CompletedLoans"
       />
     </div>

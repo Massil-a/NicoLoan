@@ -37,11 +37,13 @@
 </template>
 
 <script>
+import { API_URL } from '@/config';
+import VueCookies from 'vue-cookies'
+
 export default {
-  name: 'TableComponent',
   props: {
-    UserId: {
-      type: String,
+    Own: {
+      type: Boolean,
       required: false,
     },
     ClientTag: {
@@ -51,51 +53,97 @@ export default {
   },
   data() {
     return {
-      columns: ['ClientTag', 'Opération', 'Montant dûe', 'Durée totale en mois', 'Date de création', 'Statut'],
+      columns: ['ClientTag', 'Opération', 'Montant dû', 'Durée totale en mois', 'Date de création', 'Statut'],
       rows: [],
     };
   },
   methods: {
-    fetchRowsByUserId(UserId) {
-      // Implémentez ici la logique pour récupérer les données par UserId
-      // Par exemple, une requête API pour récupérer les données
-      this.rows = [
-        // Exemple de données récupérées
-        { ClientTag: 'User1', Opération: 'Opération1', 'Montant dûe': '1000 €', 'Durée totale en mois': 12, 'Date de création': '2022-01-01', Statut: 'En cours' },
-        // Ajoutez d'autres lignes si nécessaire
-      ];
+    async fetchRowsForOwn(UserId) {
+      try {
+        this.$store.dispatch('setLoading', true);
+
+        const response = await fetch(`${API_URL}/loans/getByUser`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': VueCookies.get('nl_auth_token'),
+          },
+        });
+
+        if (!response.ok) {
+          const e = await response.json();
+          throw new Error(`${e.message} (${e.errorCode})`);
+        }
+
+        const data = await response.json();
+        this.rows = (data.record).map((row) => ({
+          'ClientTag': row.client.clientTag,
+          'Opération': row.loanName,
+          'Montant dû': `${row.totalAmount} €`,
+          'Durée totale en mois': row.durationMonths,
+          'Date de création': new Date(row.createdAt).toLocaleDateString(),
+          'Statut': row.status,
+        }));
+      } catch (err) {
+        this.$store.dispatch('setErrorMessage', err.message);
+      } finally {
+        this.$store.dispatch('setLoading', false);
+      }
     },
-    fetchRowsByClientTag(ClientTag) {
-      // Implémentez ici la logique pour récupérer les données par ClientTag
-      // Par exemple, une requête API pour récupérer les données
-      this.rows = [
-        // Exemple de données récupérées
-        { ClientTag: 'Client1', Opération: 'Opération1', 'Montant dûe': '2000 €', 'Durée totale en mois': 24, 'Date de création': '2022-01-01', Statut: 'Terminé' },
-        // Ajoutez d'autres lignes si nécessaire
-      ];
+    async fetchRowsByClientTag(ClientTag) {
+      try {
+        this.$store.dispatch('setLoading', true);
+
+        const response = await fetch(`${API_URL}/loans/getByClientTag/${ClientTag}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': VueCookies.get('nl_auth_token'),
+          },
+        });
+
+        if (!response.ok) {
+          const e = await response.json();
+          throw new Error(`${e.message} (${e.errorCode})`);
+        }
+
+        const data = await response.json();
+        this.rows = (data.record).map((row) => ({
+          'ClientTag': row.client.clientTag,
+          'Opération': row.loanName,
+          'Montant dû': `${row.totalAmount} €`,
+          'Durée totale en mois': row.durationMonths,
+          'Date de création': new Date(row.createdAt).toLocaleDateString(),
+          'Statut': row.status,
+        }));
+      } catch (err) {
+        this.$store.dispatch('setErrorMessage', err.message);
+      } finally {
+        this.$store.dispatch('setLoading', false);
+      }
     },
-    createRow() {
+    async createRow() {
       const newRow = this.columns.reduce((acc, column) => {
         acc[column] = '';
         return acc;
       }, {});
       this.rows.push(newRow);
     },
-    duplicateRow(index) {
+    async duplicateRow(index) {
       const duplicatedRow = { ...this.rows[index] };
       this.rows.splice(index + 1, 0, duplicatedRow);
     },
-    editRow(index) {
+    async editRow(index) {
       console.log('Edit row at index', index);
     },
-    deleteRow(index) {
+    async deleteRow(index) {
       this.rows.splice(index, 1);
     },
   },
   watch: {
-    UserId(newUserId) {
-      if (newUserId) {
-        this.fetchRowsByUserId(newUserId);
+    Own(newOwn) {
+      if (newOwn) {
+        this.fetchRowsForOwn();
       }
     },
     ClientTag(newClientTag) {
@@ -105,8 +153,8 @@ export default {
     },
   },
   created() {
-    if (this.UserId) {
-      this.fetchRowsByUserId(this.UserId);
+    if (this.Own) {
+      this.fetchRowsForOwn(this.Own);
     } else if (this.ClientTag) {
       this.fetchRowsByClientTag(this.ClientTag);
     }

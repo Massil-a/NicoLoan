@@ -27,7 +27,9 @@ export enum ErrCodes {
     INTERNAL_SERVER_ERROR = 1010,  // Erreur interne du serveur
 
     CLIENT_ALREADY_EXISTS = 2002,  // Client déjà existant
-    CLIENT_NOT_FOUND = 2003        // Client introuvable
+    CLIENT_NOT_FOUND = 2003,       // Client introuvable
+
+    LOAN_NOT_FOUND = 3001
 }
 
 

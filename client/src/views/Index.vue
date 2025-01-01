@@ -32,6 +32,6 @@ export default {
 <style scoped>
 .index {
   text-align: center;
-  margin-top: 50px;
+  padding-top: 130px;
 }
 </style>

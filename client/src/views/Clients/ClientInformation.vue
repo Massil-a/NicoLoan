@@ -105,15 +105,6 @@ export default {
         city: '',
         country: '',
       },
-      columns: ['ClientTag', 'Opération', 'Montant dûe', 'Durée totale en mois', 'Date de création', 'Statut'],
-      rows: Array.from({ length: 50 }, (_, i) => ({
-        ClientTag: `Client ${i + 1}`,
-        Opération: `Opération ${i + 1}`,
-        'Montant dûe': `${(Math.random() * 100000).toFixed(2)} €`,
-        'Durée totale en mois': Math.floor(Math.random() * 60) + 1,
-        'Date de création': new Date().toISOString().split('T')[0],
-        Statut: Math.random() > 0.5 ? 'En cours' : 'Terminé',
-      })),
     };
   },
   mounted() {
