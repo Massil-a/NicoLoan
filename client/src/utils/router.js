@@ -13,6 +13,8 @@ import Clients from '@/views/Clients.vue';
 import NewClient from '@/views/Clients/NewClient.vue'
 import ClientInformation from '@/views/Clients/ClientInformation.vue';
 
+import Repayments from '@/views/Repayments.vue';
+
 
 const routes = [
   {
@@ -54,6 +56,12 @@ const routes = [
     path: '/ClientInformation/:page',
     name: 'ClientInformation',
     component: ClientInformation,
+    props: true
+  },
+  {
+    path: '/Repayments',
+    name: 'Repayments',
+    component: Repayments,
     props: true
   },
   {

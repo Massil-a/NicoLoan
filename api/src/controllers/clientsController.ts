@@ -76,3 +76,15 @@ export const getOneClientById = async (req: Request, res: Response, next: NextFu
     return next(new HttpException("Erreur dans la récupération du client.", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null))
   }
 }
+
+export const getAllTAgs = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const tags = await prisma_client.clients.findMany({ where : { userId: req.user.id }, select: { clientTag: true }})
+    if(!tags) return next(new HttpException("Aucun ClientTag trouvé.", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.NOT_FOUND, null))
+
+    res.status(200).json({ msg: "ClientTags bien trouvés.", tags })
+  } catch(e:any) {
+    console.log(e)
+    return next(new HttpException("Erreur dans la récupération des clientTags.", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null))
+  }
+}

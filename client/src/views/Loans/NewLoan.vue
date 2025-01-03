@@ -4,22 +4,37 @@
     <div class="form-container">
       <form @submit.prevent="submitForm">
         <div class="wrapper">
-          <!-- 1ere Partie : Informations sur le prêt -->
           <div class="loan-info">
             <div class="form-section">
               <h2>Informations sur le prêt</h2>
-              <div class="form-group">
+              <div class="form-group" style="position: relative;">
                 <label for="loanName">Nom du Prêt</label>
                 <input type="text" id="loanName" v-model="loan.loanName" required />
               </div>
-              <div class="form-group">
+              <div class="form-group" style="position: relative;">
                 <label for="clientTag">ClientTag</label>
-                <input type="text" id="clientTag" v-model="loan.clientTag" required />
+                <input 
+                  type="text" 
+                  id="clientTag" 
+                  v-model="searchQuery" 
+                  @focus="displayChoices" 
+                  @blur="hideChoices" 
+                  @input="filterTags" 
+                  required 
+                />
+                <ul v-if="showChoices" class="choices-list">
+                  <li 
+                    v-for="tag in filteredTags" 
+                    :key="tag" 
+                    @click="selectTag(tag)"
+                  >
+                    {{ tag }}
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
 
-          <!-- 2eme Partie : Montant -->
           <div class="loan-amount">
             <div class="form-section">
               <h2>Montant</h2>
@@ -34,7 +49,6 @@
             </div>
           </div>
 
-          <!-- 3eme Partie : Dates -->
           <div class="loan-dates">
             <div class="form-section">
               <h2>Dates</h2>
@@ -44,7 +58,13 @@
               </div>
               <div class="form-group">
                 <label for="dueDate">Date de Fin</label>
-                <input type="date" id="dueDate" v-model="loan.dueDate" required @change="calculateDurationMonths" />
+                <input 
+                  type="date" 
+                  id="dueDate" 
+                  v-model="loan.dueDate" 
+                  required 
+                  @change="calculateDurationMonths" 
+                />
               </div>
               <div class="form-group">
                 <label for="durationMonths">Durée (en mois)</label>
@@ -53,7 +73,7 @@
             </div>
           </div>
         </div>
-        <button type="button" class="submit-button" @click="goToLoans()">Annuler</button>
+        <button type="button" class="submit-button" @click="goToLoans">Annuler</button>
         <button type="submit" class="submit-button">Enregistrer</button>
       </form>
     </div>
@@ -80,7 +100,14 @@ export default {
         dueDate: '',
         durationMonths: '',
       },
+      clientTags: [],
+      filteredTags: [],
+      showChoices: false,
+      searchQuery: '',
     };
+  },
+  mounted() {
+    this.getAllTags();
   },
   methods: {
     async submitForm() {
@@ -117,6 +144,45 @@ export default {
       const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
       this.loan.durationMonths = months;
     },
+    async getAllTags() {
+      try {
+        const response = await fetch(`${API_URL}/clients/getAllTags`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': await VueCookies.get('nl_auth_token'),
+          }
+        });
+
+        if (!response.ok) {
+          const e = await response.json();
+          throw new Error(`${e.message} (${e.errorCode})`);
+        }
+
+        const data = await response.json();
+        this.clientTags = Array.from(new Set(data.tags.map(tag => tag.clientTag)));
+        this.filteredTags = [...this.clientTags];
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    displayChoices() {
+      this.showChoices = true;
+    },
+    hideChoices() {
+      setTimeout(() => {
+        this.showChoices = false;
+      }, 200);
+    },
+    selectTag(tag) {
+      this.loan.clientTag = tag;
+      this.searchQuery = tag;
+      this.showChoices = false;
+    },
+    filterTags() {
+      const query = this.searchQuery.toLowerCase();
+      this.filteredTags = this.clientTags.filter(tag => tag.toLowerCase().includes(query));
+    },
   },
 };
 </script>
@@ -132,7 +198,7 @@ export default {
   flex-direction: column;
   align-items: stretch;
   width: 80%;
-  margin-top:120px;
+  margin-top: 120px;
 }
 
 .wrapper {
@@ -156,6 +222,7 @@ export default {
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
+  position: relative;
 }
 
 label {
@@ -170,6 +237,32 @@ input {
   border-radius: 5px;
   width: 100%;
   box-sizing: border-box;
+}
+
+.choices-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 10;
+  width: calc(100% - 20px);
+  top: calc(100% + 5px);
+  left: 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.choices-list li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.choices-list li:hover {
+  background-color: #f0f0f0;
 }
 
 .submit-button {
