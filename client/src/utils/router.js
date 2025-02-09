@@ -5,16 +5,21 @@ import Auth from '@/views/Auth.vue';
 import Index from '@/views/Index.vue';
 import NotFoundPage from '@/views/NotFoundPage.vue';
 
-import Loans from '@/views/Loans.vue';
+import Loans from '@/views/Loans/Loans.vue';
 import NewLoan from '@/views/Loans/NewLoan.vue';
 import CurrentLoans from '@/views/Loans/CurrentLoans.vue';
 
-import Clients from '@/views/Clients.vue';
+import Clients from '@/views/Clients/Clients.vue';
 import NewClient from '@/views/Clients/NewClient.vue'
 import ClientInformation from '@/views/Clients/ClientInformation.vue';
 
 import Repayments from '@/views/Repayments.vue';
+import NewRepayment from '@/views/Repayments/NewRepayment.vue';
+import CurrentRepayments from '@/views/Repayments/CurrentRepayments.vue'
 
+import Contact from '@/views/Contact/Contact.vue';
+
+import Settings from '@/views/Settings/Settings.vue';
 
 const routes = [
   {
@@ -62,6 +67,30 @@ const routes = [
     path: '/Repayments',
     name: 'Repayments',
     component: Repayments,
+    props: true
+  },
+  {
+    path: '/NewRepayment',
+    name: 'NewRepayment',
+    component: NewRepayment,
+    props: true
+  },
+  {
+    path: '/CurrentRepayments',
+    name: 'CurrentRepayments',
+    component: CurrentRepayments,
+    props: true
+  },
+  {
+    path: '/Contact',
+    name: 'Contact',
+    component: Contact,
+    props: true
+  },
+  {
+    path: '/Settings',
+    name: 'Settings',
+    component: Settings,
     props: true
   },
   {

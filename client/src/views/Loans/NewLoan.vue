@@ -21,6 +21,7 @@
                   @blur="hideChoices" 
                   @input="filterTags" 
                   required 
+                  autocomplete="off"
                 />
                 <ul v-if="showChoices" class="choices-list">
                   <li 
