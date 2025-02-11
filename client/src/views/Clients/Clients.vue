@@ -90,7 +90,7 @@ export default {
 
 .button-container {
     position: absolute;
-    z-index: 1000;
+    z-index: 999;
 }
 
 .bottom-left {

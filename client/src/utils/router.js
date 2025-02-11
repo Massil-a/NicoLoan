@@ -13,9 +13,10 @@ import Clients from '@/views/Clients/Clients.vue';
 import NewClient from '@/views/Clients/NewClient.vue'
 import ClientInformation from '@/views/Clients/ClientInformation.vue';
 
-import Repayments from '@/views/Repayments.vue';
+import Repayments from '@/views/Repayments/Repayments.vue';
 import NewRepayment from '@/views/Repayments/NewRepayment.vue';
 import CurrentRepayments from '@/views/Repayments/CurrentRepayments.vue'
+import ClosedRepayments from '@/views/Repayments/ClosedRepayments.vue'
 
 import Contact from '@/views/Contact/Contact.vue';
 
@@ -79,6 +80,12 @@ const routes = [
     path: '/CurrentRepayments',
     name: 'CurrentRepayments',
     component: CurrentRepayments,
+    props: true
+  },
+  {
+    path: '/ClosedRepayments',
+    name: 'ClosedRepayments',
+    component: ClosedRepayments,
     props: true
   },
   {

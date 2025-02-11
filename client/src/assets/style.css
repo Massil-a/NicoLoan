@@ -37,6 +37,10 @@ body {
   justify-content: center;
 }
 
+input:disabled {
+  cursor: not-allowed;
+}
+
 /* #region StyleAuth */
 .auth-form-container {
   background-color: var(--whiteDarkable);

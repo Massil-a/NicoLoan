@@ -31,7 +31,7 @@
       </table>
     </div>
     <div class="create-button-container">
-      <button class="create-button" @click="createRow">Créer</button>
+      <button class="create-button" @click="createRow">Créer un nouveau prêt</button>
     </div>
   </div>
 </template>
@@ -123,11 +123,7 @@ export default {
       }
     },
     async createRow() {
-      const newRow = this.columns.reduce((acc, column) => {
-        acc[column] = '';
-        return acc;
-      }, {});
-      this.rows.push(newRow);
+      this.$router.push('NewLoan');
     },
     async duplicateRow(index) {
       const duplicatedRow = { ...this.rows[index] };

@@ -9,10 +9,16 @@
         redirectPath="NewRepayment" 
       />
       <Card 
-        iconPath="current-repayment.svg" 
-        title="Remboursements clôturés" 
-        subtitle="Jetez un oeil à vos remboursements" 
+        iconPath="current-repayments.svg" 
+        title="Remboursements récents" 
+        subtitle="Remboursement des prêts en cours" 
         redirectPath="CurrentRepayments" 
+      />
+      <Card 
+        iconPath="completed-repayments.svg" 
+        title="Remboursements clôturés" 
+        subtitle="Remboursement concernant les prêts clôs" 
+        redirectPath="ClosedRepayments" 
       />
     </div>
   </div>

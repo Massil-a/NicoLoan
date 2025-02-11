@@ -31,7 +31,7 @@
       </table>
     </div>
     <div class="create-button-container">
-      <button class="create-button" @click="createRow">Créer</button>
+      <button class="create-button" @click="createRow">Créer un nouveau remboursement</button>
     </div>
   </div>
 </template>
@@ -53,7 +53,7 @@ export default {
   },
   data() {
     return {
-      columns: ['ClientTag', 'Loan ID', 'Date de paiement', 'Montant payé'],
+      columns: ['ClientTag', 'Nom du prêt', 'Date de paiement', 'Montant payé'],
       rows: [],
     };
   },
@@ -62,7 +62,7 @@ export default {
       try {
         this.$store.dispatch('setLoading', true);
 
-        const response = await fetch(`${API_URL}/repayments/getByUser`, {
+        const response = await fetch(`${API_URL}/repayments/myRepayments`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -74,11 +74,10 @@ export default {
           const e = await response.json();
           throw new Error(`${e.message} (${e.errorCode})`);
         }
-
         const data = await response.json();
-        this.rows = data.record.map(row => ({
+        this.rows = data.records.map(row => ({
           'ClientTag': row.client.clientTag,
-          'Loan ID': row.loanId,
+          'Nom du prêt': row.loan.loanName,
           'Date de paiement': new Date(row.paymentDate).toLocaleDateString(),
           'Montant payé': `${row.amountPaid} €`,
         }));
@@ -108,7 +107,7 @@ export default {
         const data = await response.json();
         this.rows = data.record.map(row => ({
           'ClientTag': row.client.clientTag,
-          'Loan ID': row.loanId,
+          'Nom du prêt': row.loanId,
           'Date de paiement': new Date(row.paymentDate).toLocaleDateString(),
           'Montant payé': `${row.amountPaid} €`,
         }));
@@ -119,11 +118,7 @@ export default {
       }
     },
     createRow() {
-      const newRow = this.columns.reduce((acc, column) => {
-        acc[column] = '';
-        return acc;
-      }, {});
-      this.rows.push(newRow);
+      this.$router.push('NewRepayment');
     },
     duplicateRow(index) {
       const duplicatedRow = { ...this.rows[index] };
