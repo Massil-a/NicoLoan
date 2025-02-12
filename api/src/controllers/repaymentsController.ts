@@ -42,7 +42,8 @@ export const myRepayments = async (req: Request, res: Response, next: NextFuncti
         paymentDate: true,
         loan: {
           select: {
-            loanName: true
+            loanName: true,
+            status: true,
           }
         },
         client: {

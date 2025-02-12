@@ -8,6 +8,7 @@ import NotFoundPage from '@/views/NotFoundPage.vue';
 import Loans from '@/views/Loans/Loans.vue';
 import NewLoan from '@/views/Loans/NewLoan.vue';
 import CurrentLoans from '@/views/Loans/CurrentLoans.vue';
+import ClosedLoans from '@/views/Loans/ClosedLoans.vue';
 
 import Clients from '@/views/Clients/Clients.vue';
 import NewClient from '@/views/Clients/NewClient.vue'
@@ -52,6 +53,11 @@ const routes = [
     path: '/NewLoan',
     name: 'NewLoan',
     component: NewLoan,
+  },
+  {
+    path: '/ClosedLoans',
+    name: 'ClosedLoans',
+    component: ClosedLoans,
   },
   {
     path: '/NewClient',

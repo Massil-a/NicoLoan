@@ -46,9 +46,3 @@ export enum statusCodes {
     NO_CONTENT = 204,          // Pas de contenu
     ACCEPTED = 202             // Requête acceptée, mais non traitée
 }
-
-// export class NotFoundException extends HttpException {
-//     constructor(message: string, errorCode: ErrCodes){
-//         super(message, errorCode, 404, null);
-//     }
-// }

@@ -2,7 +2,6 @@
     <Header />
     <div class="contenu-container">
       <button class="return-button" @click="goToLoans">Retour</button>
-      IL FAUT TRIERRRRRRRRRRRRRRRRRRRRR
       <RepaymentsTable :Own="true" />
     </div>
 </template>

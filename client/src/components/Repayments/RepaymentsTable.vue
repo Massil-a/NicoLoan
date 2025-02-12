@@ -50,6 +50,10 @@ export default {
       type: String,
       required: false,
     },
+    Closed: {
+      type: Boolean,
+      required: false,
+    }
   },
   data() {
     return {
@@ -75,12 +79,18 @@ export default {
           throw new Error(`${e.message} (${e.errorCode})`);
         }
         const data = await response.json();
-        this.rows = data.records.map(row => ({
-          'ClientTag': row.client.clientTag,
-          'Nom du prêt': row.loan.loanName,
-          'Date de paiement': new Date(row.paymentDate).toLocaleDateString(),
-          'Montant payé': `${row.amountPaid} €`,
-        }));
+        this.rows = data.records.map(row => {
+        if (this.Closed && row.loan.status === "Closed") {
+          return {
+            'ClientTag': row.client.clientTag,
+            'Nom du prêt': row.loan.loanName,
+            'Date de paiement': new Date(row.paymentDate).toLocaleDateString(),
+            'Montant payé': `${row.amountPaid} €`,
+          };
+        } else {
+          return null;
+        }
+      }).filter(row => row !== null);
       } catch (err) {
         this.$store.dispatch('setErrorMessage', err.message);
       } finally {

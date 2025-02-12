@@ -26,8 +26,8 @@
         <div class="contact-card" @click="goTo('mailto:nicoloan@gmail.com')">
           <img src="@/assets/contacts/gmail.webp" alt="Logo Gmail" class="contact-card-logo" />
           <div class="contact-card-info">
-            <h2 class="contact-card-title">Envoyez-nous un email</h2>
-            <p class="contact-card-description">Si vous avez des questions ou des problèmes à rapporter, envoyez-nous un email à tout moment.</p>
+            <h2 class="contact-card-title">Envoyez-nous un mail</h2>
+            <p class="contact-card-description">Si vous avez des questions ou des problèmes à rapporter, envoyez-nous un mail à tout moment.</p>
           </div>
         </div>
 

@@ -4,6 +4,15 @@
       <table class="data-table">
         <thead>
           <tr>
+            <th>
+              <input 
+                type="checkbox" 
+                v-model="selectAll" 
+                :checked="isAllSelected" 
+                @change="toggleSelectAll"
+                class="select-all-checkbox"
+              />
+            </th>
             <th v-for="(column, index) in columns" :key="index">
               {{ column }}
             </th>
@@ -12,17 +21,48 @@
         </thead>
         <tbody>
           <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
+            <td>
+              <input 
+                type="checkbox" 
+                v-model="row.selected" 
+                @change="updateSelectAll" 
+                class="select-checkbox"
+              />
+            </td>
             <td v-for="(column, colIndex) in columns" :key="colIndex">
-              {{ row[column] }}
+              <div v-if="editingRowIndex !== rowIndex">{{ row[column] }}</div>
+
+              <template v-if="editingRowIndex === rowIndex">
+                <input 
+                  v-if="column !== 'Statut'" 
+                  v-model="row[column]" 
+                  :type="getInputType(column)" 
+                  :maxlength="getMaxLength(column)"
+                  :disabled="column === 'ClientTag'" 
+                  class="editable-cell"
+                  :placeholder="column === 'Date de création' ? 'yyyy-mm-dd' : ''"
+                />
+                <select 
+                  v-if="column === 'Statut'" 
+                  v-model="row[column]" 
+                  class="editable-cell" 
+                  :disabled="column === 'ClientTag'"
+                >
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="PENDING">PENDING</option>
+                  <option value="CLOSED">CLOSED</option>
+                </select>
+              </template>
             </td>
             <td>
-              <span class="action-icon" @click="duplicateRow(rowIndex)">
-                <img src="@/assets/icons/duplicate.svg" alt="Dupliquer" />
-              </span>
-              <span class="action-icon" @click="editRow(rowIndex)">
+              <span v-if="editingRowIndex !== rowIndex" class="action-icon" @click="editRow(rowIndex)">
                 <img src="@/assets/icons/edit.svg" alt="Modifier" />
               </span>
-              <span class="action-icon" @click="deleteRow(rowIndex)">
+              <span v-else class="action-icon" @click="confirmModification(rowIndex)">
+                <img src="@/assets/icons/confirm.svg" alt="Confirmer" />
+              </span>
+              <!-- Masquer le bouton de suppression en mode édition -->
+              <span v-if="editingRowIndex !== rowIndex" class="action-icon" @click="deleteRow(rowIndex)">
                 <img src="@/assets/icons/delete.svg" alt="Supprimer" />
               </span>
             </td>
@@ -30,9 +70,20 @@
         </tbody>
       </table>
     </div>
-    <div class="create-button-container">
-      <button class="create-button" @click="createRow">Créer un nouveau prêt</button>
-    </div>
+    <div class="button-container">
+        <div class="button-left">
+          <button class="create-button" @click="createRow">Créer un nouveau prêt</button>
+        </div>
+        <div class="button-right">
+          <button 
+            class="delete-selection-button" 
+            @click="deleteSelectedRows" 
+            :disabled="!anySelected" 
+          >
+            Supprimer sélection
+          </button>
+        </div>
+      </div>
   </div>
 </template>
 
@@ -50,12 +101,26 @@ export default {
       type: String,
       required: false,
     },
+    Status : {
+      type: String,
+      required: false,
+    }
   },
   data() {
     return {
       columns: ['ClientTag', 'Opération', 'Montant dû', 'Durée totale en mois', 'Date de création', 'Statut'],
       rows: [],
+      selectAll: false,
+      editingRowIndex: null,
     };
+  },
+  computed: {
+    isAllSelected() {
+      return this.rows.length && this.rows.every(row => row.selected);
+    },
+    anySelected() {
+      return this.rows.some(row => row.selected);
+    }
   },
   methods: {
     async fetchRowsForOwn(UserId) {
@@ -76,13 +141,14 @@ export default {
         }
 
         const data = await response.json();
-        this.rows = (data.record).map((row) => ({
+        this.rows = data.record.map((row) => ({
           'ClientTag': row.client.clientTag,
           'Opération': row.loanName,
           'Montant dû': `${row.totalAmount} €`,
           'Durée totale en mois': row.durationMonths,
           'Date de création': new Date(row.createdAt).toLocaleDateString(),
           'Statut': row.status,
+          'selected': false,
         }));
       } catch (err) {
         this.$store.dispatch('setErrorMessage', err.message);
@@ -108,13 +174,21 @@ export default {
         }
 
         const data = await response.json();
-        this.rows = (data.record).map((row) => ({
+        this.rows = data.record.filter(row => {
+          if (this.Status !== null && row.status === this.Status) {
+            return true;
+          } else if (this.Status === null) {
+            return true;
+          }
+          return false;
+        }).map((row) => ({
           'ClientTag': row.client.clientTag,
           'Opération': row.loanName,
           'Montant dû': `${row.totalAmount} €`,
           'Durée totale en mois': row.durationMonths,
           'Date de création': new Date(row.createdAt).toLocaleDateString(),
           'Statut': row.status,
+          'selected': false,
         }));
       } catch (err) {
         this.$store.dispatch('setErrorMessage', err.message);
@@ -122,24 +196,52 @@ export default {
         this.$store.dispatch('setLoading', false);
       }
     },
-    async createRow() {
+    toggleSelectAll() {
+      this.rows.forEach(row => row.selected = this.selectAll);
+    },
+    updateSelectAll() {
+      this.selectAll = this.isAllSelected;
+    },
+    editRow(index) {
+      this.editingRowIndex = index;
+    },
+    confirmModification(index) {
+      this.editingRowIndex = null;
+      // Logique de confirmation si nécessaire
+    },
+    deleteRow(index) {
+      this.rows.splice(index, 1);
+    },
+    deleteSelectedRows() {
+      const selectedIds = this.rows.filter(row => row.selected).map(row => row.id);
+      // Appeler l'API de suppression ici
+      this.rows = this.rows.filter(row => !row.selected);
+    },
+    createRow() {
       this.$router.push('NewLoan');
     },
-    async duplicateRow(index) {
-      const duplicatedRow = { ...this.rows[index] };
-      this.rows.splice(index + 1, 0, duplicatedRow);
+    getInputType(column) {
+      if (column === 'Montant dû') {
+        return 'number';
+      } else if (column === 'Durée totale en mois') {
+        return 'number';
+      } else if (column === 'Date de création') {
+        return 'date';
+      } else {
+        return 'text';
+      }
     },
-    async editRow(index) {
-      console.log('Edit row at index', index);
-    },
-    async deleteRow(index) {
-      this.rows.splice(index, 1);
+    getMaxLength(column) {
+      if (column === 'Opération') {
+        return 300;
+      }
+      return null;
     },
   },
   watch: {
     Own(newOwn) {
       if (newOwn) {
-        this.fetchRowsForOwn();
+        this.fetchRowsForOwn(newOwn);
       }
     },
     ClientTag(newClientTag) {
@@ -176,6 +278,7 @@ export default {
   overflow-y: auto;
   max-height: 70vh;
   width: 100%;
+  margin-bottom: 20px; /* Ajouté pour un espacement sous le tableau */
 }
 
 .data-table {
@@ -193,7 +296,7 @@ export default {
   background-color: var(--primary-color);
   color: var(--whiteDarkable);
   position: sticky;
-  top: -2%;
+  top: 0; /* Correction du top pour que le header soit fixé */
   z-index: 1;
 }
 
@@ -205,12 +308,14 @@ export default {
   background-color: #f1f1f1;
 }
 
-.create-button-container {
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
   margin-top: 20px;
-  align-self: flex-start;
 }
 
-.create-button {
+.create-button, .delete-selection-button {
   background-color: var(--primary-color);
   color: var(--whiteDarkable);
   border: none;
@@ -219,8 +324,16 @@ export default {
   cursor: pointer;
 }
 
-.create-button:hover {
+.create-button:hover, .delete-selection-button:hover {
   background-color: var(--primary-color-dark);
+}
+
+.delete-selection-button {
+  background-color: red;
+}
+
+.delete-selection-button:disabled {
+  background-color: #ccc;
 }
 
 .action-icon {
@@ -236,5 +349,29 @@ export default {
 
 .action-icon img:hover {
   opacity: 0.7;
+}
+
+.select-all-checkbox {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+.select-checkbox {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+.editable-cell {
+  padding: 5px;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.editable-cell:disabled {
+  background-color: #f1f1f1;
 }
 </style>

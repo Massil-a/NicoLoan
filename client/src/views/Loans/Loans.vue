@@ -18,7 +18,7 @@
         iconPath="completed-loans.svg" 
         title="Prêts clôs" 
         subtitle="Nostalgique ?" 
-        redirectPath="CompletedLoans"
+        redirectPath="ClosedLoans"
       />
     </div>
   </div>
