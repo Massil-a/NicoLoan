@@ -4,6 +4,15 @@
       <table class="data-table">
         <thead>
           <tr>
+            <th>
+              <input 
+                type="checkbox" 
+                v-model="selectAll" 
+                :checked="isAllSelected" 
+                @change="toggleSelectAll"
+                class="select-all-checkbox"
+              />
+            </th>
             <th v-for="(column, index) in columns" :key="index">
               {{ column }}
             </th>
@@ -12,17 +21,36 @@
         </thead>
         <tbody>
           <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
+            <td>
+              <input 
+                type="checkbox" 
+                v-model="row.selected" 
+                @change="updateSelectAll" 
+                class="select-checkbox"
+              />
+            </td>
             <td v-for="(column, colIndex) in columns" :key="colIndex">
-              {{ row[column] }}
+              <div v-if="editingRowIndex !== rowIndex">{{ row[column] }}</div>
+
+              <template v-if="editingRowIndex === rowIndex">
+                <input 
+                  v-if="column !== 'ClientTag'" 
+                  v-model="row[column]" 
+                  :type="getInputType(column)" 
+                  :maxlength="getMaxLength(column)"
+                  class="editable-cell"
+                  :placeholder="column === 'Date de paiement' ? 'yyyy-mm-dd' : ''"
+                />
+              </template>
             </td>
             <td>
-              <span class="action-icon" @click="duplicateRow(rowIndex)">
-                <img src="@/assets/icons/duplicate.svg" alt="Dupliquer" />
-              </span>
-              <span class="action-icon" @click="editRow(rowIndex)">
+              <span v-if="editingRowIndex !== rowIndex" class="action-icon" @click="editRow(rowIndex)">
                 <img src="@/assets/icons/edit.svg" alt="Modifier" />
               </span>
-              <span class="action-icon" @click="deleteRow(rowIndex)">
+              <span v-else class="action-icon" @click="confirmModification(rowIndex)">
+                <img src="@/assets/icons/confirm.svg" alt="Confirmer" />
+              </span>
+              <span v-if="editingRowIndex !== rowIndex" class="action-icon" @click="deleteRow(rowIndex)">
                 <img src="@/assets/icons/delete.svg" alt="Supprimer" />
               </span>
             </td>
@@ -30,8 +58,17 @@
         </tbody>
       </table>
     </div>
-    <div class="create-button-container">
-      <button class="create-button" @click="createRow">Créer un nouveau remboursement</button>
+      <div class="button-left">
+        <button class="create-button" @click="createRow">Créer un nouveau remboursement</button>
+      </div>
+      <div class="button-right">
+        <button 
+          class="delete-selection-button" 
+          @click="deleteSelectedRows" 
+          :disabled="!anySelected" 
+        >
+          Supprimer sélection
+        </button>
     </div>
   </div>
 </template>
@@ -50,16 +87,26 @@ export default {
       type: String,
       required: false,
     },
-    Closed: {
-      type: Boolean,
+    Status: {
+      type: String,
       required: false,
-    }
+    },
   },
   data() {
     return {
       columns: ['ClientTag', 'Nom du prêt', 'Date de paiement', 'Montant payé'],
       rows: [],
+      selectAll: false,
+      editingRowIndex: null,
     };
+  },
+  computed: {
+    isAllSelected() {
+      return this.rows.length && this.rows.every(row => row.selected);
+    },
+    anySelected() {
+      return this.rows.some(row => row.selected);
+    }
   },
   methods: {
     async fetchRepaymentsByUser() {
@@ -78,19 +125,17 @@ export default {
           const e = await response.json();
           throw new Error(`${e.message} (${e.errorCode})`);
         }
+
         const data = await response.json();
-        this.rows = data.records.map(row => {
-        if (this.Closed && row.loan.status === "Closed") {
-          return {
-            'ClientTag': row.client.clientTag,
+        this.rows = data.records
+          .filter(row => !this.Status || row.loan.status === this.Status)
+          .map(row => ({
+            'ClientTag': row.loan.client.clientTag,
             'Nom du prêt': row.loan.loanName,
             'Date de paiement': new Date(row.paymentDate).toLocaleDateString(),
             'Montant payé': `${row.amountPaid} €`,
-          };
-        } else {
-          return null;
-        }
-      }).filter(row => row !== null);
+            'selected': false,
+          }));
       } catch (err) {
         this.$store.dispatch('setErrorMessage', err.message);
       } finally {
@@ -120,6 +165,7 @@ export default {
           'Nom du prêt': row.loanId,
           'Date de paiement': new Date(row.paymentDate).toLocaleDateString(),
           'Montant payé': `${row.amountPaid} €`,
+          'selected': false,
         }));
       } catch (err) {
         this.$store.dispatch('setErrorMessage', err.message);
@@ -127,18 +173,44 @@ export default {
         this.$store.dispatch('setLoading', false);
       }
     },
-    createRow() {
-      this.$router.push('NewRepayment');
+    toggleSelectAll() {
+      this.rows.forEach(row => row.selected = this.selectAll);
     },
-    duplicateRow(index) {
-      const duplicatedRow = { ...this.rows[index] };
-      this.rows.splice(index + 1, 0, duplicatedRow);
+    updateSelectAll() {
+      this.selectAll = this.isAllSelected;
     },
     editRow(index) {
-      console.log('Edit row at index', index);
+      this.editingRowIndex = index;
+    },
+    confirmModification(index) {
+      this.editingRowIndex = null;
+      // Logique de confirmation si nécessaire
     },
     deleteRow(index) {
       this.rows.splice(index, 1);
+    },
+    deleteSelectedRows() {
+      const selectedRows = this.rows.filter(row => row.selected);
+      // Appeler l'API pour supprimer les lignes sélectionnées ici
+      this.rows = this.rows.filter(row => !row.selected);
+    },
+    createRow() {
+      this.$router.push('NewRepayment');
+    },
+    getInputType(column) {
+      if (column === 'Montant payé') {
+        return 'number';
+      } else if (column === 'Date de paiement') {
+        return 'date';
+      } else {
+        return 'text';
+      }
+    },
+    getMaxLength(column) {
+      if (column === 'Nom du prêt') {
+        return 300;
+      }
+      return null;
     },
   },
   watch: {
@@ -198,7 +270,7 @@ export default {
   background-color: var(--primary-color);
   color: var(--whiteDarkable);
   position: sticky;
-  top: -2%;
+  top: 0;
   z-index: 1;
 }
 
@@ -210,22 +282,34 @@ export default {
   background-color: #f1f1f1;
 }
 
-.create-button-container {
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
   margin-top: 20px;
-  align-self: flex-start;
 }
 
-.create-button {
+.create-button, .delete-selection-button {
   background-color: var(--primary-color);
   color: var(--whiteDarkable);
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  
+  margin: 5px;
 }
 
-.create-button:hover {
+.create-button:hover, .delete-selection-button:hover {
   background-color: var(--primary-color-dark);
+}
+
+.delete-selection-button {
+  background-color: red;
+}
+
+.delete-selection-button:disabled {
+  background-color: #ccc;
 }
 
 .action-icon {
@@ -241,5 +325,29 @@ export default {
 
 .action-icon img:hover {
   opacity: 0.7;
+}
+
+.select-all-checkbox {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+.select-checkbox {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+.editable-cell {
+  padding: 5px;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.editable-cell:disabled {
+  background-color: #f1f1f1;
 }
 </style>

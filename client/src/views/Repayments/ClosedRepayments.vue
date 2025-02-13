@@ -1,8 +1,10 @@
 <template>
     <Header />
     <div class="contenu-container">
-      <button class="return-button" @click="goToLoans">Retour</button>
-      <RepaymentsTable :Own="true" />
+      <div class="content-container-wrapper">
+        <button class="retour-button" @click="goToLoans">Retour</button>
+        <RepaymentsTable :Own="true" :Status="'CLOSED'" />
+    </div>
     </div>
 </template>
 

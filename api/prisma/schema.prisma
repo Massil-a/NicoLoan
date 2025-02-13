@@ -47,7 +47,6 @@ model Clients {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   loans      Loans[]
-  repayments Repayments[]
   user       Users      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([email])
@@ -78,14 +77,11 @@ model Loans {
 model Repayments {
   id          Int      @id @default(autoincrement())
   loanId      Int
-  clientId    Int
   paymentDate DateTime @default(now())
   amountPaid  Float
   loan        Loans     @relation(fields: [loanId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  client      Clients   @relation(fields: [clientId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([loanId])
-  @@index([clientId])
 }
 
 model Settings {

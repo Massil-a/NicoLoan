@@ -5,13 +5,8 @@
         <thead>
           <tr>
             <th>
-              <input 
-                type="checkbox" 
-                v-model="selectAll" 
-                :checked="isAllSelected" 
-                @change="toggleSelectAll"
-                class="select-all-checkbox"
-              />
+              <input type="checkbox" v-model="selectAll" :checked="isAllSelected" @change="toggleSelectAll"
+                class="select-all-checkbox" />
             </th>
             <th v-for="(column, index) in columns" :key="index">
               {{ column }}
@@ -22,32 +17,17 @@
         <tbody>
           <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
             <td>
-              <input 
-                type="checkbox" 
-                v-model="row.selected" 
-                @change="updateSelectAll" 
-                class="select-checkbox"
-              />
+              <input type="checkbox" v-model="row.selected" @change="updateSelectAll" class="select-checkbox" />
             </td>
             <td v-for="(column, colIndex) in columns" :key="colIndex">
               <div v-if="editingRowIndex !== rowIndex">{{ row[column] }}</div>
 
               <template v-if="editingRowIndex === rowIndex">
-                <input 
-                  v-if="column !== 'Statut'" 
-                  v-model="row[column]" 
-                  :type="getInputType(column)" 
-                  :maxlength="getMaxLength(column)"
-                  :disabled="column === 'ClientTag'" 
-                  class="editable-cell"
-                  :placeholder="column === 'Date de création' ? 'yyyy-mm-dd' : ''"
-                />
-                <select 
-                  v-if="column === 'Statut'" 
-                  v-model="row[column]" 
-                  class="editable-cell" 
-                  :disabled="column === 'ClientTag'"
-                >
+                <input v-if="column !== 'Statut'" v-model="row[column]" :type="getInputType(column)"
+                  :maxlength="getMaxLength(column)" :disabled="column === 'ClientTag'" class="editable-cell"
+                  :placeholder="column === 'Date de création' ? 'yyyy-mm-dd' : ''" />
+                <select v-if="column === 'Statut'" v-model="row[column]" class="editable-cell"
+                  :disabled="column === 'ClientTag'">
                   <option value="ACTIVE">ACTIVE</option>
                   <option value="PENDING">PENDING</option>
                   <option value="CLOSED">CLOSED</option>
@@ -69,22 +49,16 @@
           </tr>
         </tbody>
       </table>
-    </div>
-    <div class="button-container">
-        <div class="button-left">
-          <button class="create-button" @click="createRow">Créer un nouveau prêt</button>
-        </div>
-        <div class="button-right">
-          <button 
-            class="delete-selection-button" 
-            @click="deleteSelectedRows" 
-            :disabled="!anySelected" 
-          >
-            Supprimer sélection
-          </button>
-        </div>
+    </div> <!-- fin table-wrapper -->
+      <div class="button-left">
+        <button class="create-button" @click="createRow">Créer un nouveau prêt</button>
       </div>
-  </div>
+      <div class="button-right">
+        <button class="delete-selection-button" @click="deleteSelectedRows" :disabled="!anySelected">
+          Supprimer sélection
+        </button>
+      </div>
+  </div> <!-- fin table-container -->
 </template>
 
 <script>
@@ -101,7 +75,7 @@ export default {
       type: String,
       required: false,
     },
-    Status : {
+    Status: {
       type: String,
       required: false,
     }
@@ -175,9 +149,9 @@ export default {
 
         const data = await response.json();
         this.rows = data.record.filter(row => {
-          if (this.Status !== null && row.status === this.Status) {
+          if (this.Status != null && row.status === this.Status) {
             return true;
-          } else if (this.Status === null) {
+          } else if (this.Status == null) {
             return true;
           }
           return false;
@@ -271,6 +245,7 @@ export default {
   flex-direction: column;
   align-items: stretch;
   width: 100%;
+  height: 100%; /* Assure que la hauteur du conteneur prend toute la hauteur de son parent */
 }
 
 .table-wrapper {
@@ -278,7 +253,8 @@ export default {
   overflow-y: auto;
   max-height: 70vh;
   width: 100%;
-  margin-bottom: 20px; /* Ajouté pour un espacement sous le tableau */
+  margin-bottom: 20px;
+  /* Ajouté pour un espacement sous le tableau */
 }
 
 .data-table {
@@ -286,7 +262,8 @@ export default {
   border-collapse: collapse;
 }
 
-.data-table th, .data-table td {
+.data-table th,
+.data-table td {
   padding: 15px;
   border: 1px solid #ddd;
   text-align: left;
@@ -296,7 +273,8 @@ export default {
   background-color: var(--primary-color);
   color: var(--whiteDarkable);
   position: sticky;
-  top: 0; /* Correction du top pour que le header soit fixé */
+  top: 0;
+  /* Correction du top pour que le header soit fixé */
   z-index: 1;
 }
 
@@ -312,19 +290,21 @@ export default {
   display: flex;
   justify-content: space-between;
   gap: 30px;
-  margin-top: 20px;
 }
 
-.create-button, .delete-selection-button {
+.create-button,
+.delete-selection-button {
   background-color: var(--primary-color);
   color: var(--whiteDarkable);
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  margin: 5px;
 }
 
-.create-button:hover, .delete-selection-button:hover {
+.create-button:hover,
+.delete-selection-button:hover {
   background-color: var(--primary-color-dark);
 }
 

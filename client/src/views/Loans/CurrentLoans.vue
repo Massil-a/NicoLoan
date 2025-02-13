@@ -1,12 +1,10 @@
 <template>
   <Header />
   <div class="contenu-container">
-    <button type="button" class="submit-button" @click="goToLoans">Retour</button>
+    <div class="content-container-wrapper">
+      <button type="button" class="retour-button" @click="goToLoans">Retour</button>
     <LaonsTable :Own="true" />
-     <!-- TODO : il faut initialiser le bouton "créer aussi" -->
-      <!-- TODO : il faut aussi que dans la table (donc la il faut taffer dans le componetn) 
-        je puisse dupliquer, supprimer, modifier un écriture 
-      -->
+  </div>
   </div>
 </template>
 
@@ -31,3 +29,4 @@ export default {
   }
 };
 </script>
+

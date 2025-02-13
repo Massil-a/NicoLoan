@@ -47,6 +47,7 @@
       <div class="auth-form-group terms">
         <input type="checkbox" id="terms" v-model="terms" class="auth-form-checkbox" required />
         <label for="terms" class="auth-form-label">J'accepte les conditions d'utilisation</label>
+        <!-- TODO : Mettre une page conditions d'utilisations -->
       </div>
       <button type="submit" class="auth-form-button">S'inscrire</button>
       <p class="auth-form-switch">

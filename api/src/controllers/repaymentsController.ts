@@ -17,7 +17,6 @@ export const addRepayment = async (req: Request, res: Response, next: NextFuncti
     const record = await prisma_client.repayments.create({
       data: {
         amountPaid,
-        clientId: client.id,
         loanId: loan.id,
         paymentDate: toISODateTime(paymentDate)
       }
@@ -44,15 +43,15 @@ export const myRepayments = async (req: Request, res: Response, next: NextFuncti
           select: {
             loanName: true,
             status: true,
-          }
-        },
-        client: {
-          select: {
-            clientTag: true,
+            client: {  // Relation Loan → Client
+              select: {
+                clientTag: true,
+              }
+            }
           }
         }
       }
-    });
+    });    
     if(!records) return next(new HttpException("Aucun remboursement trouvé.", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.NOT_FOUND, null))
     res.status(200).json({ msg: "Remboursements bien trouvés.", records })
   } catch(e:any) {
