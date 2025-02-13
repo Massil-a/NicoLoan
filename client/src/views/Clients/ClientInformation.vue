@@ -63,8 +63,8 @@
           </div>
         </div>
         <button type="button" class="submit-button" @click="goToClients()">Annuler</button>
-        <button type="submit" class="submit-button">Enregistrer</button>
-        <!-- TODO : Ajouter un bouton pour supprimer le client -->
+        <button type="button" class="submit-button">Enregistrer</button>
+        <button type="submit" class="submit-button" style="background-color:red" @click="deleteClient()">Supprimer le client</button>
       </form>
     </div>
   </div>
@@ -142,6 +142,37 @@ export default {
     submitForm() {
       // TODO : Handle form submission
     },
+    async deleteClient() {
+      try {
+        this.$store.dispatch('setLoading', true);
+
+        const response = await fetch(`${API_URL}/clients/delete/${this.page}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': VueCookies.get('nl_auth_token'),
+          },
+        });
+
+        if (!response.ok) {
+          const e = await response.json();
+          throw new Error(`${e.message} (${e.errorCode})`);
+        }
+
+        console.log(response.json())
+
+      } catch (err) {
+        this.$store.dispatch('setErrorMessage', err.message);
+      } finally {
+        this.$store.dispatch('setLoading', false);
+      }
+    },
+    goToClients() {
+      this.$router.go(-1);
+    },
+    submitForm() {
+      // TODO : Handle form submission
+    }
   },
 };
 </script>

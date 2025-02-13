@@ -15,8 +15,9 @@ export const addClient = async (req: Request, res: Response, next: NextFunction)
 
     let client = await prisma_client.clients.findFirst({
       where: {
-        OR: [
-          { clientTag: sanitizedClientTag }
+        AND: [
+          { clientTag: sanitizedClientTag },
+          { userId: req.user.id }
         ]
       }
     });
@@ -88,3 +89,33 @@ export const getAllTAgs = async (req: Request, res: Response, next: NextFunction
     return next(new HttpException("Erreur dans la récupération des clientTags.", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null))
   }
 }
+
+export const deleteClient = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { clientTag } = req.params;
+    
+    // Trouver le client à supprimer
+    const clientToDelete = await prisma_client.clients.findFirst({
+      where: { AND: [{ clientTag }, { userId: req.user.id }] }
+    });
+    
+    if (!clientToDelete) return next(new HttpException("Client introuvable.", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.NOT_FOUND, null));
+
+    // Supprimer les paiements (Repayments) liés à ce client
+    const deletedRepayments = await Promise.all(
+      (await prisma_client.loans.findMany({ where: { clientId: clientToDelete.id } }))
+        .map(loan => prisma_client.repayments.deleteMany({ where: { loanId: loan.id } }))
+    );
+
+    // Supprimer les prêts (Loans) liés à ce client
+    const deletedLoans = await prisma_client.loans.deleteMany({ where: { clientId: clientToDelete.id } });
+
+    // Supprimer enfin le client
+    const deletedClient = await prisma_client.clients.delete({ where: { id: clientToDelete.id } });
+
+    res.status(200).json({ msg: "Client bien supprimé.", deletedClient, deletedLoans, deletedRepayments });
+  } catch (e: any) {
+    console.log(e);
+    return next(new HttpException("Erreur dans la suppression du client.", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null));
+  }
+};

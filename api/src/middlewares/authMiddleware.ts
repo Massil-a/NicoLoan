@@ -7,7 +7,7 @@ import { prisma_client } from '..'
 // Roles :
 // 1 = USER
 // 0 = ADMIN
-// -1 = BANN
+// -1 = BAN
 
 const authMiddleware = (role?: string) => {
     return async (req: Request, res: Response, next: NextFunction) => {

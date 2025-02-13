@@ -1,9 +1,9 @@
 j'ai mis des commentaires avec écrit "TODO : "
 
-supprimer un client
 montant dû déduction du remboursement
 montant total affiché ?
 changer les infos de l'user connecté dans paramètres
 picto tableaux non fonctionnels
 cloturer ligne
 parametres api
+enregistrer modification client -> submitForm()
