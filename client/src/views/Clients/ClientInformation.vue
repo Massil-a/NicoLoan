@@ -2,7 +2,7 @@
   <Header />
   <div class="contenu-container">
     <div class="form-container">
-      <form @submit.prevent="submitForm">
+      <form>
         <div class="wrapper">
           <div class="info-container">
             <div class="form-section">
@@ -38,18 +38,18 @@
               <h2>Informations supplémentaires</h2>
               <div class="form-row">
                 <div class="form-group">
-                  <label for="address">Adresse</label>
-                  <input type="text" id="address" v-model="client.address" disabled />
+                  <label for="raison_sociale">Raison Sociale</label>
+                  <input type="text" id="raison_sociale" v-model="client.raison_sociale" disabled />
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label for="city">Ville</label>
-                  <input type="text" id="city" v-model="client.city" disabled />
+                  <label for="societe">Société</label>
+                  <input type="text" id="societe" v-model="client.societe" disabled />
                 </div>
                 <div class="form-group">
-                  <label for="country">Pays</label>
-                  <input type="text" id="country" v-model="client.country" disabled />
+                  <label for="plafond">Plafond</label>
+                  <input type="text" id="plafond" v-model="client.plafond" disabled />
                 </div>
               </div>
             </div>
@@ -63,8 +63,8 @@
           </div>
         </div>
         <button type="button" class="submit-button" @click="goToClients()">Annuler</button>
-        <button type="button" class="submit-button">Enregistrer</button>
-        <button type="submit" class="submit-button" style="background-color:red" @click="deleteClient()">Supprimer le client</button>
+        <button type="button" class="submit-button" @click="saveForm()">Enregistrer</button>
+        <button type="button" class="submit-button" style="background-color:red" @click="deleteClient()">Supprimer le client</button>
       </form>
     </div>
   </div>
@@ -101,9 +101,9 @@ export default {
         createdAt: '',
         updatedAt: '',
         name: '',
-        address: '',
-        city: '',
-        country: '',
+        raison_sociale: '',
+        societe: '',
+        plafond: '',
       },
     };
   },
@@ -139,8 +139,39 @@ export default {
     goToClients() {
       this.$router.go(-1);
     },
-    submitForm() {
-      // TODO : Handle form submission
+    async saveForm() {
+      try {
+        console.log(this.client)
+        this.$store.dispatch('setLoading', true);
+        const response = await fetch(`${API_URL}/clients/update`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': VueCookies.get('nl_auth_token'),
+          },
+          body: JSON.stringify({
+            id: this.client.id,
+            firstName: this.client.firstName,
+            lastName: this.client.lastName,
+            email: this.client.email,
+            phone: this.client.phone,
+            clientTag: this.client.clientTag,
+            updatedAt: new Date().toISOString()
+          })
+        });
+
+        if (!response.ok) {
+          const e = await response.json();
+          throw new Error(`${e.message} (${e.errorCode})`);
+        }
+        const data = response.json();
+        this.$router.push('/Clients')
+
+      } catch (err) {
+        this.$store.dispatch('setErrorMessage', err.message);
+      } finally {
+        this.$store.dispatch('setLoading', false);
+      }
     },
     async deleteClient() {
       try {
@@ -159,7 +190,7 @@ export default {
           throw new Error(`${e.message} (${e.errorCode})`);
         }
 
-        console.log(response.json())
+        this.$router.push('/Clients');
 
       } catch (err) {
         this.$store.dispatch('setErrorMessage', err.message);
@@ -169,9 +200,6 @@ export default {
     },
     goToClients() {
       this.$router.go(-1);
-    },
-    submitForm() {
-      // TODO : Handle form submission
     }
   },
 };

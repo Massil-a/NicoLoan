@@ -8,10 +8,6 @@
             <div class="form-section">
               <h2>Informations sur le prêt</h2>
               <div class="form-group" style="position: relative;">
-                <label for="loanName">Nom du Prêt</label>
-                <input type="text" id="loanName" v-model="loan.loanName" required />
-              </div>
-              <div class="form-group" style="position: relative;">
                 <label for="clientTag">ClientTag</label>
                 <input 
                   type="text" 
@@ -33,6 +29,10 @@
                   </li>
                 </ul>
               </div>
+              <div class="form-group" style="position: relative;">
+                <label for="loanName">Nom du Prêt</label>
+                <input type="text" id="loanName" v-model="loan.loanName" required />
+              </div>
             </div>
           </div>
 
@@ -41,11 +41,11 @@
               <h2>Montant</h2>
               <div class="form-group">
                 <label for="totalAmount">Montant Total</label>
-                <input type="number" id="totalAmount" v-model="loan.totalAmount" required />
+                <input type="number" id="totalAmount" v-model="loan.totalAmount" required @input="calculateDurationMonths" />
               </div>
               <div class="form-group">
                 <label for="monthlyPayment">Montant par mois</label>
-                <input type="number" id="monthlyPayment" v-model="loan.monthlyPayment" required />
+                <input type="number" id="monthlyPayment" v-model="loan.monthlyPayment" required @input="calculateDurationMonths" />
               </div>
             </div>
           </div>
@@ -64,7 +64,7 @@
                   id="dueDate" 
                   v-model="loan.dueDate" 
                   required 
-                  @change="calculateDurationMonths" 
+                  @change="calculateDurationFromDueDate" 
                 />
               </div>
               <div class="form-group">
@@ -129,7 +129,7 @@ export default {
         }
 
         const data = await response.json();
-        this.$router.push({ name: 'Loans' });
+        this.$router.push('/Loans');
       } catch (err) {
         console.error(err);
       } finally {
@@ -137,9 +137,26 @@ export default {
       }
     },
     goToLoans() {
-      this.$router.push('Loans');
+      this.$router.push('/Loans');
     },
     calculateDurationMonths() {
+      // Calculer la durée en mois en fonction du montant total et du montant par mois
+      if (this.loan.monthlyPayment > 0) {
+        this.loan.durationMonths = Math.ceil(this.loan.totalAmount / this.loan.monthlyPayment);
+      } else {
+        this.loan.durationMonths = 0;
+      }
+
+      // Calculer la date de fin en fonction de la durée en mois et de la date de début
+      this.updateDueDate();
+    },
+    updateDueDate() {
+      const start = new Date(this.loan.startedAt);
+      const end = new Date(start.setMonth(start.getMonth() + this.loan.durationMonths));
+      this.loan.dueDate = end.toISOString().split('T')[0];
+    },
+    calculateDurationFromDueDate() {
+      // Recalculer la durée en mois lorsque la date de fin est modifiée manuellement
       const start = new Date(this.loan.startedAt);
       const end = new Date(this.loan.dueDate);
       const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());

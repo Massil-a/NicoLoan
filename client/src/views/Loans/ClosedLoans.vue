@@ -1,35 +1,31 @@
 <template>
-    <Header />
-    <div class="contenu-container">
-      <div class="content-container-wrapper">
+  <Header />
+  <div class="contenu-container">
+    <div class="content-container-wrapper">
       <button type="button" class="retour-button" @click="goToLoans">Retour</button>
-      <LaonsTable :Own="true" :status="'CLOSED'"/>
-        <!-- TODO : il faut aussi que dans la table (donc la il faut taffer dans le componetn) 
-          je puisse dupliquer, supprimer, modifier un écriture 
-        -->
-      </div> 
+      <LaonsTable :Own="true" :Status="['CLOSED']" />
     </div>
-  </template>
-  
-  <script>
-  import Header from '@/components/main/Header.vue';
-  import LaonsTable from '@/components/Loans/LoansTable.vue';
-  
-  export default {
-    components: {
-      Header,
-      LaonsTable,
+  </div>
+</template>
+
+<script>
+import Header from '@/components/main/Header.vue';
+import LaonsTable from '@/components/Loans/LoansTable.vue';
+
+export default {
+  components: {
+    Header,
+    LaonsTable,
+  },
+  data() {
+    return {
+      UserId: JSON.parse(localStorage.getItem('nl_user')).id,
+    };
+  },
+  methods: {
+    goToLoans() {
+      this.$router.push('Loans');
     },
-    data() {
-      return {
-        UserId: JSON.parse(localStorage.getItem('nl_user')).id,
-      };
-    },
-    methods:{
-      goToLoans() {
-        this.$router.push('Loans');
-      },
-    }
-  };
-  </script>
-  
+  }
+};
+</script>

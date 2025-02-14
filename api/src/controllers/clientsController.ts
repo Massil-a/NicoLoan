@@ -80,7 +80,7 @@ export const getOneClientById = async (req: Request, res: Response, next: NextFu
 
 export const getAllTAgs = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const tags = await prisma_client.clients.findMany({ where : { userId: req.user.id }, select: { clientTag: true }})
+    const tags = await prisma_client.clients.findMany({ where : { userId: req.user.id }, select: { clientTag: true, id: true }})
     if(!tags) return next(new HttpException("Aucun ClientTag trouvé.", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.NOT_FOUND, null))
 
     res.status(200).json({ msg: "ClientTags bien trouvés.", tags })
@@ -119,3 +119,30 @@ export const deleteClient = async (req: Request, res: Response, next: NextFuncti
     return next(new HttpException("Erreur dans la suppression du client.", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null));
   }
 };
+
+export const updateClient = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id, firstName, lastName, email, phone, clientTag, updatedAt } = req.body;
+  
+    const record = await prisma_client.clients.update({ 
+      where: { id }, 
+      data: 
+      { 
+        firstName,
+        lastName,
+        email,
+        phone,
+        clientTag,
+        updatedAt,
+      } 
+      }).catch(() => null);
+
+    if (!record) return next(new HttpException("Client introuvable.", ErrCodes.LOAN_NOT_FOUND, statusCodes.NOT_FOUND, null))
+    
+    res.status(200).json({ msg: "Client bien modifié." });
+  } catch (e: any) {
+    console.log(e);
+    return next(new HttpException("Erreur dans la modification du client.", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null));
+  }
+};
+

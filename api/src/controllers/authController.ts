@@ -37,7 +37,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
-    let user = await prisma_client.users.findFirst({ where: { email } });
+    let user = await prisma_client.users.findFirst({ where: { email }, include : { settings: true } });
     if (!user) {
       return next(new HttpException("Utilisateur introuvable!", ErrCodes.USER_NOT_FOUND, statusCodes.NOT_FOUND, null));
     }
@@ -54,7 +54,16 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         lastName: user.lastName,
         email: user.email,
         idRole : user.idRole,
-        updatedAt : user.updatedAt
+        updatedAt : user.updatedAt,
+        settings : {
+          interestRates: {
+            displayInterestRate: user.settings?.displayInterestRate,
+            Green: user.settings?.interestRateGreen,
+            Orange: user.settings?.interestRateOrange,
+            Red: user.settings?.interestRateRed
+          },
+          alertLateRepayment : user.settings?.alertLateRepayment
+        }
       }, 
       token
     })

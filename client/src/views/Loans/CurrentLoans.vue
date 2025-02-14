@@ -3,8 +3,8 @@
   <div class="contenu-container">
     <div class="content-container-wrapper">
       <button type="button" class="retour-button" @click="goToLoans">Retour</button>
-    <LaonsTable :Own="true" />
-  </div>
+      <LaonsTable :Own="true" :Status="['ACTIVE', 'PENDING']" />
+    </div>
   </div>
 </template>
 
@@ -22,11 +22,10 @@ export default {
       UserId: JSON.parse(localStorage.getItem('nl_user')).id,
     };
   },
-  methods:{
+  methods: {
     goToLoans() {
       this.$router.push('Loans');
     },
   }
 };
 </script>
-

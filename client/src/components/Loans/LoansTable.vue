@@ -15,18 +15,18 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
+          <tr v-for="(row, rowIndex) in rows" :key="row.id">
             <td>
               <input type="checkbox" v-model="row.selected" @change="updateSelectAll" class="select-checkbox" />
             </td>
             <td v-for="(column, colIndex) in columns" :key="colIndex">
-              <div v-if="editingRowIndex !== rowIndex">{{ row[column] }}</div>
+              <div v-if="editingRowId !== row.id">{{ row[column] }}</div>
 
-              <template v-if="editingRowIndex === rowIndex">
-                <input v-if="column !== 'Statut'" v-model="row[column]" :type="getInputType(column)"
+              <template v-if="editingRowId === row.id">
+                <input v-if="column !== 'Statut'" v-model="editableRow[column]" :type="getInputType(column)"
                   :maxlength="getMaxLength(column)" :disabled="column === 'ClientTag'" class="editable-cell"
                   :placeholder="column === 'Date de création' ? 'yyyy-mm-dd' : ''" />
-                <select v-if="column === 'Statut'" v-model="row[column]" class="editable-cell"
+                <select v-if="column === 'Statut'" v-model="editableRow[column]" class="editable-cell"
                   :disabled="column === 'ClientTag'">
                   <option value="ACTIVE">ACTIVE</option>
                   <option value="PENDING">PENDING</option>
@@ -35,57 +35,54 @@
               </template>
             </td>
             <td>
-              <span v-if="editingRowIndex !== rowIndex" class="action-icon" @click="editRow(rowIndex)">
+              <span v-if="editingRowId !== row.id" class="action-icon" @click="editRow(row)">
                 <img src="@/assets/icons/edit.svg" alt="Modifier" />
               </span>
-              <span v-else class="action-icon" @click="confirmModification(rowIndex)">
+              <span v-else class="action-icon" @click="confirmModification(row.id)">
                 <img src="@/assets/icons/confirm.svg" alt="Confirmer" />
               </span>
-              <!-- Masquer le bouton de suppression en mode édition -->
-              <span v-if="editingRowIndex !== rowIndex" class="action-icon" @click="deleteRow(rowIndex)">
+              <span v-if="editingRowId !== row.id" class="action-icon" @click="cloturerLigne(row.id)">
+                <img src="@/assets/icons/cloturer.svg" alt="Clôturer" />
+              </span>
+              <span v-if="editingRowId !== row.id" class="action-icon" @click="deleteRow(row.id)">
                 <img src="@/assets/icons/delete.svg" alt="Supprimer" />
+              </span>
+              <span v-if="editingRowId === row.id" class="action-icon" @click="cancelEdit">
+                <img src="@/assets/icons/back.svg" alt="Annuler" />
               </span>
             </td>
           </tr>
         </tbody>
       </table>
-    </div> <!-- fin table-wrapper -->
-      <div class="button-left">
-        <button class="create-button" @click="createRow">Créer un nouveau prêt</button>
-      </div>
-      <div class="button-right">
-        <button class="delete-selection-button" @click="deleteSelectedRows" :disabled="!anySelected">
-          Supprimer sélection
-        </button>
-      </div>
-  </div> <!-- fin table-container -->
+    </div>
+    <div class="button-left">
+      <button class="create-button" @click="redirectNewLoan">Créer un nouveau prêt</button>
+    </div>
+    <div class="button-right">
+      <button class="delete-selection-button" @click="deleteSelectedRows" :disabled="!anySelected">
+        Supprimer sélection
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>
 import { API_URL } from '@/config';
-import VueCookies from 'vue-cookies'
+import VueCookies from 'vue-cookies';
 
 export default {
   props: {
-    Own: {
-      type: Boolean,
-      required: false,
-    },
-    ClientTag: {
-      type: String,
-      required: false,
-    },
-    Status: {
-      type: String,
-      required: false,
-    }
+    Own: Boolean,
+    ClientTag: String,
+    Status: Array
   },
   data() {
     return {
-      columns: ['ClientTag', 'Opération', 'Montant dû', 'Durée totale en mois', 'Date de création', 'Statut'],
+      columns: ['ClientTag', 'Opération', 'Montant dû', 'Montant total', 'Durée totale en mois', 'Date de création', 'Statut'],
       rows: [],
       selectAll: false,
-      editingRowIndex: null,
+      editingRowId: null,
+      editableRow: {}
     };
   },
   computed: {
@@ -97,10 +94,9 @@ export default {
     }
   },
   methods: {
-    async fetchRowsForOwn(UserId) {
+    async fetchRowsForOwn() {
       try {
         this.$store.dispatch('setLoading', true);
-
         const response = await fetch(`${API_URL}/loans/getByUser`, {
           method: 'GET',
           headers: {
@@ -110,19 +106,23 @@ export default {
         });
 
         if (!response.ok) {
-          const e = await response.json();
-          throw new Error(`${e.message} (${e.errorCode})`);
+          throw new Error(await response.text());
         }
 
         const data = await response.json();
-        this.rows = data.record.map((row) => ({
+
+        this.rows = data.record.filter(row => 
+          !this.Status || this.Status.includes(row.status)
+        ).map(row => ({
+          'id': row.id,
           'ClientTag': row.client.clientTag,
           'Opération': row.loanName,
-          'Montant dû': `${row.totalAmount} €`,
+          'Montant dû': row.totalAmount - row.totalPaid,
+          'Montant total': row.totalAmount,
           'Durée totale en mois': row.durationMonths,
-          'Date de création': new Date(row.createdAt).toLocaleDateString(),
+          'Date de création': row.createdAt.split('T')[0],
           'Statut': row.status,
-          'selected': false,
+          'selected': false
         }));
       } catch (err) {
         this.$store.dispatch('setErrorMessage', err.message);
@@ -133,7 +133,6 @@ export default {
     async fetchRowsByClientTag(ClientTag) {
       try {
         this.$store.dispatch('setLoading', true);
-
         const response = await fetch(`${API_URL}/loans/getByClientTag/${ClientTag}`, {
           method: 'GET',
           headers: {
@@ -143,26 +142,22 @@ export default {
         });
 
         if (!response.ok) {
-          const e = await response.json();
-          throw new Error(`${e.message} (${e.errorCode})`);
+          throw new Error(await response.text());
         }
 
         const data = await response.json();
-        this.rows = data.record.filter(row => {
-          if (this.Status != null && row.status === this.Status) {
-            return true;
-          } else if (this.Status == null) {
-            return true;
-          }
-          return false;
-        }).map((row) => ({
+        this.rows = data.record.filter(row => 
+          !this.Status || this.Status.includes(row.status)
+        ).map(row => ({
+          'id': row.id,
           'ClientTag': row.client.clientTag,
           'Opération': row.loanName,
-          'Montant dû': `${row.totalAmount} €`,
+          'Montant dû': row.totalAmount - row.totalPaid,
+          'Montant total': row.totalAmount,
           'Durée totale en mois': row.durationMonths,
-          'Date de création': new Date(row.createdAt).toLocaleDateString(),
+          'Date de création': row.createdAt.split('T')[0],
           'Statut': row.status,
-          'selected': false,
+          'selected': false
         }));
       } catch (err) {
         this.$store.dispatch('setErrorMessage', err.message);
@@ -176,60 +171,111 @@ export default {
     updateSelectAll() {
       this.selectAll = this.isAllSelected;
     },
-    editRow(index) {
-      this.editingRowIndex = index;
+    editRow(row) {
+      this.editingRowId = row.id;
+      this.editableRow = { ...row };
     },
-    confirmModification(index) {
-      this.editingRowIndex = null;
-      // Logique de confirmation si nécessaire
+    async confirmModification(id) {
+      const index = this.rows.findIndex(row => row.id === id);
+      if (index !== -1) {
+        this.rows[index] = { ...this.editableRow };
+      }
+
+      try {
+        this.$store.dispatch('setLoading', true);
+        const response = await fetch(`${API_URL}/loans/update`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': VueCookies.get('nl_auth_token'),
+          },
+          body: JSON.stringify({
+            loan : this.rows[index]
+          })
+        });
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+      } catch (err) {
+        this.$store.dispatch('setErrorMessage', err.message);
+      } finally {
+        this.$store.dispatch('setLoading', false);
+      }
+
+      this.editingRowId = null;
     },
-    deleteRow(index) {
-      this.rows.splice(index, 1);
+    cancelEdit() {
+      this.editingRowId = null;
     },
-    deleteSelectedRows() {
+    async cloturerLigne(id) {
+      try {
+        this.$store.dispatch('setLoading', true);
+        const response = await fetch(`${API_URL}/loans/close`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': VueCookies.get('nl_auth_token'),
+          },
+          body: JSON.stringify({ idLoan: id })
+        });
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+        //const data = await response.json();
+      } catch (err) {
+        this.$store.dispatch('setErrorMessage', err.message);
+      } finally {
+        this.$store.dispatch('setLoading', false);
+      }
+    },
+    async deleteRow(idLoan) {
+      try {
+        this.$store.dispatch('setLoading', true);
+        const response = await fetch(`${API_URL}/loans/delete`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': VueCookies.get('nl_auth_token'),
+          },
+          body: JSON.stringify({ idLoan })
+        });
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+        this.rows = this.rows.filter(row => row.id !== idLoan);
+        const data = await response.json();
+        this.$store.dispatch('setErrorMessage', data.message)
+      } catch (err) {
+        this.$store.dispatch('setErrorMessage', err.message);
+      } finally {
+        this.$store.dispatch('setLoading', false);
+      }
+    },
+    deleteSelectedRows() { 
       const selectedIds = this.rows.filter(row => row.selected).map(row => row.id);
-      // Appeler l'API de suppression ici
-      this.rows = this.rows.filter(row => !row.selected);
+      selectedIds.forEach(id => this.deleteRow(id));
     },
-    createRow() {
-      this.$router.push('NewLoan');
+    redirectNewLoan() {
+      this.$router.replace('/NewLoan');
     },
     getInputType(column) {
-      if (column === 'Montant dû') {
-        return 'number';
-      } else if (column === 'Durée totale en mois') {
-        return 'number';
-      } else if (column === 'Date de création') {
-        return 'date';
-      } else {
-        return 'text';
-      }
+      return column === 'Montant dû' || column === 'Durée totale en mois' ? 'number' : column === 'Date de création' ? 'date' : 'text';
     },
     getMaxLength(column) {
-      if (column === 'Opération') {
-        return 300;
-      }
-      return null;
+      return column === 'Opération' ? 300 : null;
     },
   },
   watch: {
     Own(newOwn) {
-      if (newOwn) {
-        this.fetchRowsForOwn(newOwn);
-      }
+      if (newOwn) this.fetchRowsForOwn();
     },
     ClientTag(newClientTag) {
-      if (newClientTag) {
-        this.fetchRowsByClientTag(newClientTag);
-      }
+      if (newClientTag) this.fetchRowsByClientTag(newClientTag);
     },
   },
   created() {
-    if (this.Own) {
-      this.fetchRowsForOwn(this.Own);
-    } else if (this.ClientTag) {
-      this.fetchRowsByClientTag(this.ClientTag);
-    }
+    if (this.Own) this.fetchRowsForOwn();
+    else if (this.ClientTag) this.fetchRowsByClientTag(this.ClientTag);
   },
 };
 </script>
@@ -254,7 +300,6 @@ export default {
   max-height: 70vh;
   width: 100%;
   margin-bottom: 20px;
-  /* Ajouté pour un espacement sous le tableau */
 }
 
 .data-table {
@@ -314,6 +359,7 @@ export default {
 
 .delete-selection-button:disabled {
   background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .action-icon {

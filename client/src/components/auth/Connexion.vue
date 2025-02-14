@@ -9,13 +9,8 @@
       <div class="auth-form-group">
         <label for="password" class="auth-form-label">Mot de passe:</label>
         <div class="password-container">
-          <input
-            :type="showPassword ? 'text' : 'password'"
-            id="password"
-            v-model="password"
-            class="auth-form-input"
-            required
-          />
+          <input :type="showPassword ? 'text' : 'password'" id="password" v-model="password" class="auth-form-input"
+            required />
           <span @click="togglePasswordVisibility" class="toggle-password">
             👁️
           </span>
@@ -62,8 +57,28 @@ export default {
         }
 
         const data = await response.json();
+        console.log(data)
 
-        localStorage.setItem('nl_user', JSON.stringify(data.user).toString());
+        localStorage.setItem('nl_user', JSON.stringify(
+          {
+            id: data.user.id,
+            email: data.user.email,
+            firstName: data.user.firstName,
+            lastName: data.user.lastName,
+            updatedAt: data.user.updatedAt,
+            role: data.user.idRole,
+            settings: {
+              interestRates: {
+                displayinterestRate: data.user.settings.displayinterestRate ?? null,
+                Green: data.user.settings.interestRateGreen ?? null,
+                Orange: data.user.settings.interestRateOrange ?? null,
+                Red: data.user.settings.interestRateRed ?? null
+              },
+              alertLateRepayment: data.user.settings.alertLateRepayment ?? null
+            }
+          }
+        ).toString());
+
         VueCookies.set('nl_auth_token', data.token, '2h');
 
         this.$router.push({ name: 'Index' });
