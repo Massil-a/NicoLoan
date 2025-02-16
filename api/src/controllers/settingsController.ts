@@ -6,7 +6,20 @@ import { hashSync } from 'bcrypt';
 export const getSettings = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const record = await prisma_client.settings.findFirst({ where: { userId: req.user.id } })
-    if (!record) return next(new HttpException("Erreur durant l'ajout d'un remboursement", ErrCodes.USER_NOT_FOUND, statusCodes.NOT_FOUND, null))
+    if (!record) {
+      await prisma_client.settings.create({
+        data: {
+          interestRateGreen: 0,
+          interestRateOrange: 0,
+          interestRateRed: 0,
+          alertLateRepayment: false,
+          displayInterestRate: false,
+          user: {
+            connect: { id: req.user.id }
+          }
+        }
+      })
+    }
     res.status(200).json({ msg: "Settings bien trouvés.", record })
   } catch (e: any) {
     return next(new HttpException("Erreur durant la récupération de paramètres.", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null))
