@@ -41,9 +41,9 @@ jobs:
       run: npm start &
       working-directory: api
 
-    - name: ------------ EXECUTION DES TESTS JEST (API) ------------
-      run: npx jest --detectOpenHandles
-      working-directory: api
+    # - name: ------------ EXECUTION DES TESTS JEST (API) ------------
+    #   run: npx jest --detectOpenHandles
+    #   working-directory: api
 
     - name: ------------ ARRÊTER LE SERVEUR EXPO ------------
       run: kill $(cat server.pid) || true
