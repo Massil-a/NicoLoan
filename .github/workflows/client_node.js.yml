@@ -64,17 +64,17 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
   
       - name: ------------ PULL DE L'IMAGE EXISTANTE (SI DISPONIBLE) ------------
-        run: docker pull ${{ secrets.DOCKER_USERNAME }}/CLIENT_nicoloan:latest || true
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/client_nicoloan:latest || true
   
       - name: ------------ CONSTRUCTION DE L'IMAGE DOCKER AVEC CACHE ------------
         run: |
-          docker build --cache-from=${{ secrets.DOCKER_USERNAME }}/CLIENT_nicoloan:latest \
-                       --tag ${{ secrets.DOCKER_USERNAME }}/CLIENT_nicoloan:latest \
-                       --tag ${{ secrets.DOCKER_USERNAME }}/CLIENT_nicoloan:${{ github.sha }} \
+          docker build --cache-from=${{ secrets.DOCKER_USERNAME }}/client_nicoloan:latest \
+                       --tag ${{ secrets.DOCKER_USERNAME }}/client_nicoloan:latest \
+                       --tag ${{ secrets.DOCKER_USERNAME }}/client_nicoloan:${{ github.sha }} \
                        .
         working-directory: client
   
       - name: ------------ PUSH DE L'IMAGE DOCKER (LATEST & SHA) ------------
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/CLIENT_nicoloan:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/CLIENT_nicoloan:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/client_nicoloan:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/client_nicoloan:${{ github.sha }}
