@@ -1,0 +1,80 @@
+name: client CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20.x]
+
+    steps:
+    - name: ------------ RECUPERATION DU CODE DU REPO ------------
+      uses: actions/checkout@v4
+
+    - name: ------------ SET UP NODE JS SUR LES VERSION 20.x ------------
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: client/package-lock.json
+
+    - name: ------------ VERIFICATION ARBORESCENCE DU REPO ------------
+      run: ls -R
+
+    - name: ------------ INSTALLATION DES DEPENDANCES (client) ------------
+      run: npm ci
+      working-directory: client
+
+    - name: ------------ CONSTRUCTION DU PROJET (SI NECESSAIRE) ------------
+      run: npm run build --if-present
+      working-directory: client
+
+    - name: ------------ DEMARRAGE DU SERVEUR EXPO ------------
+      run: npm run dev &
+      working-directory: client
+
+    # - name: ------------ EXECUTION DES TESTS JEST (client) ------------
+    #   run: npx jest --detectOpenHandles
+    #   working-directory: client
+
+    - name: ------------ ARRÊTER LE SERVEUR EXPO ------------
+      run: kill $(cat server.pid) || true
+      working-directory: client
+      
+  docker:
+      needs: build
+      runs-on: ubuntu-latest
+  
+      steps:
+      - name: ------------ RECUPERATION DU CODE DU REPO ------------
+        uses: actions/checkout@v4
+  
+      - name: ------------ CONNEXION À DOCKER HUB ------------
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+  
+      - name: ------------ PULL DE L'IMAGE EXISTANTE (SI DISPONIBLE) ------------
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/CLIENT_nicoloan:latest || true
+  
+      - name: ------------ CONSTRUCTION DE L'IMAGE DOCKER AVEC CACHE ------------
+        run: |
+          docker build --cache-from=${{ secrets.DOCKER_USERNAME }}/CLIENT_nicoloan:latest \
+                       --tag ${{ secrets.DOCKER_USERNAME }}/CLIENT_nicoloan:latest \
+                       --tag ${{ secrets.DOCKER_USERNAME }}/CLIENT_nicoloan:${{ github.sha }} \
+                       .
+        working-directory: client
+  
+      - name: ------------ PUSH DE L'IMAGE DOCKER (LATEST & SHA) ------------
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/CLIENT_nicoloan:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/CLIENT_nicoloan:${{ github.sha }}
