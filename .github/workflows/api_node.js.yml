@@ -64,17 +64,17 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
   
       - name: ------------ PULL DE L'IMAGE EXISTANTE (SI DISPONIBLE) ------------
-        run: docker pull ${{ secrets.DOCKER_USERNAME }}/API_nicoloan:latest || true
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/api_nicoloan:latest || true
   
       - name: ------------ CONSTRUCTION DE L'IMAGE DOCKER AVEC CACHE ------------
         run: |
-          docker build --cache-from=${{ secrets.DOCKER_USERNAME }}/API_nicoloan:latest \
-                       --tag ${{ secrets.DOCKER_USERNAME }}/API_nicoloan:latest \
-                       --tag ${{ secrets.DOCKER_USERNAME }}/API_nicoloan:${{ github.sha }} \
+          docker build --cache-from=${{ secrets.DOCKER_USERNAME }}/api_nicoloan:latest \
+                       --tag ${{ secrets.DOCKER_USERNAME }}/api_nicoloan:latest \
+                       --tag ${{ secrets.DOCKER_USERNAME }}/api_nicoloan:${{ github.sha }} \
                        .
         working-directory: api
   
       - name: ------------ PUSH DE L'IMAGE DOCKER (LATEST & SHA) ------------
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/API_nicoloan:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/API_nicoloan:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/api_nicoloan:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/api_nicoloan:${{ github.sha }}
