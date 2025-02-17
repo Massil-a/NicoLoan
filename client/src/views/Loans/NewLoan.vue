@@ -131,7 +131,7 @@ export default {
         const data = await response.json();
         this.$router.push('/Loans');
       } catch (err) {
-        console.error(err);
+        this.$store.dispatch('setErrorMessage', err.message);
       } finally {
         this.$store.dispatch('setLoading', false);
       }

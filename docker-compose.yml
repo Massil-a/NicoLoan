@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: CLIENT_nicoloan
+    container_name: client-nicoloan-container
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: API_nicoloan
+    container_name: api-nicoloan-container
+    ports:
+      - "9360:9360"
+    environment:
+      - NODE_ENV=production
