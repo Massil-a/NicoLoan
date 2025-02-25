@@ -1,4 +1,4 @@
-export const API_URL = 'http://localhost:9360/api';  // Lien de votre API
+export const API_URL = 'https://nicoloan.onrender.com/api';  // Lien de votre API
 
 // Autres constantes que vous pourriez avoir
 export const APP_NAME = 'NicoLoan';
