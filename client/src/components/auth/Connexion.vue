@@ -51,13 +51,14 @@ export default {
           })
         });
 
+        console.log(response)
+
         if (!response.ok) {
           const e = await response.json()
           throw new Error(`${e.message} ( ${e.errorCode} )`);
         }
 
         const data = await response.json();
-        console.log(data)
 
         localStorage.setItem('nl_user', JSON.stringify(
           {
