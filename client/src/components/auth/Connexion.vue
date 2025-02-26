@@ -83,6 +83,7 @@ export default {
 
         this.$router.push({ name: 'Index' });
       } catch (err) {
+        console.error(err)
         this.$store.dispatch('setErrorMessage', err.message);
       } finally {
         this.$store.dispatch('setLoading', false);
