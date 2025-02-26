@@ -51,8 +51,6 @@ export default {
           })
         });
 
-        console.log(response)
-
         if (!response.ok) {
           const e = await response.json()
           throw new Error(`${e.message} ( ${e.errorCode} )`);
