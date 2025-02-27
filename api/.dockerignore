@@ -19,12 +19,12 @@ Thumbs.db
 *.swp
 *.swo
 
-# # Tests
-# coverage/
-# .nyc_output
-# tests
-# test
-# tests
+# Tests
+coverage/
+.nyc_output
+tests
+test
+tests
 
 # Build
 dist

@@ -7,11 +7,11 @@ export const errorMiddleware = (error: HttpException, req:Request, res:Response,
         error.message = "fatal error : errorMiddleware no error message attributed"
     }
     if(!error.errorCode){
-        error.message = "fatal error : errorMiddleware no error errorCode attributed"
-    }
+        error.message = "UNKNOWN_ERROR";
+    }    
     if(!error.statusCode){
-        error.message = "fatal error : errorMiddleware no error statusCode attributed"
-    }
+        error.statusCode = 500;
+    }    
 
     res.status(error.statusCode).json({
         message: error.message,

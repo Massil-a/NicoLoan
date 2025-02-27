@@ -34,7 +34,7 @@
             <input type="date" id="paymentDate" v-model="repayment.paymentDate" required />
           </div>
           <button type="button" class="submit-button" @click="goToRepayments">Annuler</button>
-          <button type="submit" class="submit-button">Enregistrer</button>
+          <button type="submit" class="submit-button" @click="enregistrerNewRepayement">Enregistrer</button>
         </div>
       </form>
     </div>
@@ -221,6 +221,32 @@ export default {
         .filter(loan => loan.loanName.toLowerCase().includes(query))
         .map(loan => loan.loanName);
     },
+    async enregistrerNewRepayement() {
+      try {        
+        this.$store.dispatch('setLoading', true);
+        const response = await fetch(`${API_URL}/repayments/add`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': await VueCookies.get('nl_auth_token'),
+            },
+            body: JSON.stringify({
+              repayment: this.repayment
+            })
+          });
+
+          if (!response.ok) {
+            const e = await response.json();
+            throw new Error(`${e.message} (${e.errorCode ?? response.status})`);
+          }
+          
+          this.$router.push('/Repayments');
+      } catch (err) {
+        this.$store.dispatch('setErrorMessage', err.message);
+      } finally {
+        this.$store.dispatch('setLoading', false);
+      }
+    }
   },
 };
 </script>

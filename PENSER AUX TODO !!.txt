@@ -2,3 +2,6 @@ j'ai mis des commentaires avec écrit "TODO : "
 
 afficher les interestRates
 recalcul durée en mois + estimation date fin
+
+SUPPRIMER LES REMBOURSMEENT ? MODIFIER UN REMBOURSEMENT ?
+CLOTURER UN REMBOURSEMENT ?

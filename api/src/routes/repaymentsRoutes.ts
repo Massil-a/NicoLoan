@@ -3,9 +3,12 @@ import authMiddleware from '../middlewares/authMiddleware'
 
 import { addRepayment, myRepayments } from '../controllers/repaymentsController'
 
-const loanRoutes: Router = Router()
+const repaymentsRoutes: Router = Router()
 
-loanRoutes.post('/add', authMiddleware("1"), addRepayment)
-loanRoutes.get('/myRepayments', authMiddleware("1"), myRepayments)
+repaymentsRoutes.post('/add', authMiddleware("1"), addRepayment)
+repaymentsRoutes.get('/myRepayments', authMiddleware("1"), myRepayments)
 
-export default loanRoutes
+// repaymentsRoutes.put('/update', authMiddleware("1"), updateRepayment)
+// repaymentsRoutes.delete('/delete', authMiddleware("1"), deleteRepayment)
+
+export default repaymentsRoutes
