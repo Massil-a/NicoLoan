@@ -57,7 +57,6 @@ export default {
         }
 
         const data = await response.json();
-        console.log(data)
 
         localStorage.setItem('nl_user', JSON.stringify(
           {
@@ -83,6 +82,7 @@ export default {
 
         this.$router.push({ name: 'Index' });
       } catch (err) {
+        console.error(err)
         this.$store.dispatch('setErrorMessage', err.message);
       } finally {
         this.$store.dispatch('setLoading', false);
