@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "types": ["jest", "node"],  // Ajoute "jest" pour inclure les types de Jest
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "strict": true
+    },
+    "include": [
+      "src/**/*",
+      "tests/**/*"
+    ]
+  }
+  
