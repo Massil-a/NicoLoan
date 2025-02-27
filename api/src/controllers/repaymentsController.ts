@@ -21,7 +21,7 @@ export const addRepayment = async (req: Request, res: Response, next: NextFuncti
         paymentDate: toISODateTime(paymentDate)
       }
     })    
-    res.status(200).json({ message : "Remboursement du prêt \"" + loanName + "\" bien créé!" })
+    res.status(200).json({ message : "Remboursement du prêt " + loanName + " bien créé!" })
   } catch (e:any) {
     return next(new HttpException("Erreur durant l'ajout d'un remboursement", ErrCodes.INTERNAL_SERVER_ERROR, statusCodes.INTERNAL_SERVER_ERROR, e ?? null))
   }
