@@ -23,7 +23,8 @@ const authMiddleware = (role?: string) => {
                 return next(new HttpException("Non autorisé!", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.BAD_REQUEST, null))
             }
 
-            if (payload.role != role) return next(new HttpException("Droit requis!", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.UNAUTHORIZED, null))
+            if ( payload.role == "-1" ) return next(new HttpException("Vous êtes banni!", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.UNAUTHORIZED, null))
+            if ( payload.role != role ) return next(new HttpException("Droit requis!", ErrCodes.UNAUTHORIZED_ACCESS, statusCodes.UNAUTHORIZED, null))
 
             req.user = user
             return next()
