@@ -107,6 +107,8 @@
 </template>
 
 <script>
+import { API_URL } from '@/config';
+
 export default {
   data() {
     return {
