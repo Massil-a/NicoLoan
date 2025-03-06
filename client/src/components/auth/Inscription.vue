@@ -132,12 +132,37 @@ export default {
     },
     async Inscription() {
       try {
-        if (this.password !== this.confirmPassword) {
+        this.$store.dispatch('setLoading', true);
+        
+        if(this.password!==this.confirmPassword){
           throw new Error('Mots de passes différents!');
         }
-        // Logic for inscription
+
+        const response = await fetch(`${API_URL}/auth/signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            firstName: this.firstName,
+            lastName: this.lastName,
+            email: this.email,
+            password: this.password
+          })
+        });
+
+        if (!response.ok) {
+          const e = await response.json()
+          throw new Error(`${e.message} (${e.errorCode})`);
+        }
+
+        const data = await response.json();
+        this.$store.dispatch('setErrorMessage', "Utilisateur bien créé !");
+        this.switchToLogin()
       } catch (err) {
-        console.error(err);
+        this.$store.dispatch('setErrorMessage', err.message);
+      } finally {
+        this.$store.dispatch('setLoading', false);
       }
     },
     togglePasswordVisibility() {
